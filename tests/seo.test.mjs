@@ -64,9 +64,9 @@ test('Vercel previews use noindex while canonical URLs still identify production
   assert.ok(!renderSitemap(pages,preview).includes('<loc>'));
 });
 test('configured primary domain is stable and an explicit override wins',()=>{
-  assert.equal(resolveContext({VERCEL_ENV:'production',VERCEL_PROJECT_PRODUCTION_URL:'my-project.vercel.app'}).origin,'https://hanzlaamjad.com');
+  assert.equal(resolveContext({VERCEL_ENV:'production',VERCEL_PROJECT_PRODUCTION_URL:'my-project.vercel.app'}).origin,'https://www.hanzlaamjad.com');
   assert.equal(resolveContext({SITE_URL:domain,VERCEL_PROJECT_PRODUCTION_URL:'my-project.vercel.app'}).origin,domain);
-  assert.equal(resolveContext({}).origin,'https://hanzlaamjad.com');
+  assert.equal(resolveContext({}).origin,'https://www.hanzlaamjad.com');
   assert.equal(resolveContext({VERCEL_ENV:'preview'}).indexable,false);
 });
 test('invalid domain configuration cannot introduce paths or markup into SEO URLs',()=>{

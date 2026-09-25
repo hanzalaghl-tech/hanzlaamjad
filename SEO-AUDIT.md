@@ -6,7 +6,7 @@ Prepared 21 September 2026. **Roman Urdu summary:** Site ka technical SEO ab maz
 
 - Homepage and seven service pages retain the same visible copy, form options, contact details, project metrics and internal page URLs. The new 3D funnel is decorative; headings and service details remain readable in the initial HTML without JavaScript.
 - The site now uses a consistent dark design, self-hosted fonts, a light Canvas 2D animation and a still state for reduced motion. Service structured data is connected to the corresponding WebPage and breadcrumb by stable IDs. Canonical links, unique titles and descriptions, XML sitemap, robots directives and 404 handling remain intact.
-- The primary HTTPS domain is configured as https://hanzlaamjad.com in site.config.mjs. After production deployment, verify its canonical URLs and submit the sitemap in Search Console. Development and portable preview pages stay noindex.
+- The primary HTTPS domain is configured as https://www.hanzlaamjad.com in site.config.mjs. After production deployment, verify its canonical URLs and submit the sitemap in Search Console. Development and portable preview pages stay noindex.
 - Technical changes alone cannot secure a top search position. Google says no one can guarantee #1. Existing service copy was left untouched by request; after launch, verified case studies, useful guides based on real work and links from your genuine profiles are the next steps if you want to compete for broader GoHighLevel searches.
 - Tests checked the rendered static HTML, schema links, internal links, sitemap and form logic. A real browser/device visual review of this revision and deployed Search Console results remain pending.
 
@@ -72,7 +72,7 @@ Skipped on purpose: FAQ structured data. Google only shows FAQ rich results for 
 
 ### Quick wins (this week)
 
-1. Verify https://hanzlaamjad.com is the primary Vercel domain and its generated canonical links and sitemap use the same origin (steps in `DEPLOY-AND-SEO.md`).
+1. Verify https://www.hanzlaamjad.com is the primary Vercel domain and its generated canonical links and sitemap use the same origin (steps in `DEPLOY-AND-SEO.md`).
 2. Verify the domain in Google Search Console, submit `/sitemap.xml`, and request indexing for the home page and the four new pages.
 3. Choose one spelling of your name (the site and resume say "Hanzla Amjad"; you also write "Hanzala") and use it on LinkedIn, Upwork, Fiverr, Contra and the site. Put the real profile URLs in `sameAs` in `site.config.mjs`.
 4. Put your website URL in every profile you own. These are your first backlinks.

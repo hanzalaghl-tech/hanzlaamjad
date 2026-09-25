@@ -12,10 +12,10 @@ GitHub repository import karein. Build command `npm run build`, output `dist` au
 
 ## 3. Domain aur existing deployment
 
-Is project ka primary domain https://hanzlaamjad.com hai. Yeh site.config.mjs mein configured hai. GitHub repository hanzalaghl-tech/hanzlaamjad aur Vercel project hanzlaamjad isi domain se linked hain.
+Is project ka primary domain https://www.hanzlaamjad.com hai. Yeh site.config.mjs mein configured hai. GitHub repository hanzalaghl-tech/hanzlaamjad aur Vercel project hanzlaamjad isi domain se linked hain.
 
-1. Vercel mein isi project par https://hanzlaamjad.com aur www.hanzlaamjad.com ke Domain settings verify karein; secondary domain ko primary par redirect karein.
-2. Agar Vercel Production environment mein SITE_URL pehle se set hai, uski value https://hanzlaamjad.com rakhein. Yeh environment variable site.config.mjs ko override karta hai.
+1. Vercel mein isi project par https://www.hanzlaamjad.com aur hanzlaamjad.com ke Domain settings verify karein; secondary domain ko primary par redirect karein.
+2. Agar Vercel Production environment mein SITE_URL pehle se set hai, uski value https://www.hanzlaamjad.com rakhein. Yeh environment variable site.config.mjs ko override karta hai.
 3. Main branch par build ke baad live HTML canonical, robots aur sitemap check karein. Kisi aur Vercel project ko yeh domain use karne ke liye pehle domain association migrate karni hoti hai.
 
 ## 4. Site.config.mjs mein yeh bharein
@@ -28,7 +28,7 @@ Is project ka primary domain https://hanzlaamjad.com hai. Yeh site.config.mjs me
 - Live homepage ka source dekhein: `rel="canonical"` aapke domain ka ho, robots `index, follow` ho.
 - `/sitemap.xml` mein 9 URLs, sab aapke domain par.
 - `/favicon.ico` khulne par aapki photo dikhe. Google ka favicon update hone mein kuch din se hafte lag sakte hain.
-- Search Console: domain verify karein, `https://hanzlaamjad.com/sitemap.xml` submit karein, homepage par "Request indexing" dein.
+- Search Console: domain verify karein, `https://www.hanzlaamjad.com/sitemap.xml` submit karein, homepage par "Request indexing" dein.
 - WhatsApp/LinkedIn par link paste karke share card check karein.
 - Phone par poori site aur ek controlled form submission test karein.
 

@@ -4,7 +4,7 @@ export default {
   alternateNames: ['Hanzala Amjad'],
   // Your real HTTPS domain, for example 'https://yourdomain.com'.
   // You can also leave this empty and set SITE_URL in Vercel instead (see DEPLOY-AND-SEO.md).
-  siteUrl: 'https://hanzlaamjad.com',
+  siteUrl: 'https://www.hanzlaamjad.com',
   email: 'hanzala.ghl@gmail.com',
   phone: '+923196088675',
   phoneDisplay: '+92 319 6088675',

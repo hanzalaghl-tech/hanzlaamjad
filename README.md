@@ -25,7 +25,7 @@ npm run build
 npm test
 ```
 
-The production-ready static output is generated in `dist/`. The primary domain is configured as https://hanzlaamjad.com in `site.config.mjs`. On Vercel production, the build uses `SITE_URL` when supplied, then `site.config.mjs`, then `VERCEL_PROJECT_PRODUCTION_URL` to determine the canonical domain. A production Vercel build with no usable origin fails with a setup message rather than publishing invented canonical URLs.
+The production-ready static output is generated in `dist/`. The primary domain is configured as https://www.hanzlaamjad.com in `site.config.mjs`. On Vercel production, the build uses `SITE_URL` when supplied, then `site.config.mjs`, then `VERCEL_PROJECT_PRODUCTION_URL` to determine the canonical domain. A production Vercel build with no usable origin fails with a setup message rather than publishing invented canonical URLs.
 
 After editing, `npm run preview:export` refreshes the portable `preview/` copy. Its relative links support opening the pages directly from the extracted folder, and it always remains `noindex`. Form delivery still needs an internet connection and must be verified on the published domain.
 
