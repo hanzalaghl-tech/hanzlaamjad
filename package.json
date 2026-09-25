@@ -1,0 +1,17 @@
+{
+  "name": "hanzla-amjad-portfolio",
+  "version": "2.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Hanzla Amjad \u2014 GoHighLevel, automation and funnel specialist.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "preview:export": "node scripts/export-preview.mjs",
+    "dev": "node scripts/dev.mjs",
+    "start": "node scripts/dev.mjs",
+    "test": "node --test tests/seo.test.mjs tests/form.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
