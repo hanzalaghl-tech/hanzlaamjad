@@ -77,7 +77,7 @@ The original Web3Forms endpoint and access key are preserved. The form validates
 
 UTM fields and supported ad click IDs are retained within the current tab session, including when a visitor enters through a service page. Service-page contact buttons select the corresponding project type. Contact fields are not stored in browser storage.
 
-`lead_form_start`, `generate_lead` and `contact_click` events are queued locally in `window.dataLayer`. Only confirmed provider success emits `generate_lead`; contact clicks are separate. No analytics account, ad pixel or tag manager is installed. If you add them later, update the privacy information and applicable consent behavior.
+`lead_form_start`, `generate_lead` and `contact_click` events are queued locally in `window.dataLayer`. Only confirmed provider success emits `generate_lead`; contact clicks are separate. Google Analytics 4 is installed with measurement ID `G-67LRRQBBCC` through the shared page head in `src/layout.mjs`. The Google tag loads on production builds; preview builds omit it. It measures page views, while the custom interaction events above remain local data-layer events unless separately configured for Google Analytics. The privacy page describes Analytics use. No advertising pixel or Google Tag Manager container is installed.
 
 ## Motion and accessibility
 
