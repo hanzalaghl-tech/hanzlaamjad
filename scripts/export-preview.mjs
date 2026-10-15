@@ -1,20 +1,19 @@
-import {mkdir,writeFile} from 'node:fs/promises';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {resolveContext,renderPages,rootDir} from './build.mjs';
-
-// Portable review copy for the owner. It is outside Vercel's published dist/ directory.
-const context=resolveContext({});
-context.indexable=false;
-const pages=renderPages(context);
-const destination=path.join(rootDir,'preview');
-await mkdir(destination,{recursive:true});
-const filename=route=>route==='/'?'index.html':route.replace(/^\/+|\/+$/g,'')+'.html';
-for(const page of pages){
-  let html=page.html.replace(/\b(href|src)="(\/[^\"]*)"/g,(_match,attribute,value)=>{
-    if(value.startsWith('/assets/')||/^\/[^/?#]+\.(ico|webmanifest)$/.test(value))return `${attribute}="../public${value}"`;
-    const match=value.match(/^([^?#]*)([\s\S]*)$/);
-    return `${attribute}="${filename(match[1])}${match[2]}"`;
-  });
-  await writeFile(path.join(destination,filename(page.path)),html);
-}
-console.log('Portable review copy: preview/index.html. Production output remains dist/.');
+const context=resolveContext({});context.indexable=false;
+let html=renderPages(context).find(p=>p.path==='/').html;
+let css=await readFile(path.join(rootDir,'public/assets/styles.css'),'utf8');
+const js=await readFile(path.join(rootDir,'public/assets/script.js'),'utf8');
+const types={'.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png','.pdf':'application/pdf','.woff2':'font/woff2','.ico':'image/x-icon','.webmanifest':'application/manifest+json'};
+const cache=new Map();
+async function data(uri){if(cache.has(uri))return cache.get(uri);const p=path.join(rootDir,'public',uri);const result=`data:${types[path.extname(p)]||'application/octet-stream'};base64,${(await readFile(p)).toString('base64')}`;cache.set(uri,result);return result;}
+for(const match of [...css.matchAll(/url\('([^']+)'\)/g)])css=css.replace(match[0],`url(${await data(match[1])})`);
+html=html.replace(/<link rel="preload"[^>]+>/g,'').replace(/<link rel="stylesheet"[^>]+>/,()=>`<style>${css}</style>`);
+html=html.replace(/<script src="\/assets\/[^\"]+" defer><\/script>/,'');
+for(const match of [...html.matchAll(/(["'])(\/assets\/[^"']+)\1/g)])html=html.replaceAll(match[0],match[1]+await data(match[2])+match[1]);
+html=html.replace('id="dialog-original"','download="project-screenshot.webp" id="dialog-original"').replace('Open full-size image','Download full-size image');
+html=html.replace('</body>',()=>`<script>${js}</script></body>`);
+const destination=path.join(rootDir,'preview');await mkdir(destination,{recursive:true});
+await writeFile(path.join(destination,'index.html'),html);
+console.log('Self-contained review copy: preview/index.html. Assets and the CV are embedded; production remains in dist/.');

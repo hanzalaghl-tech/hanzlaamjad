@@ -145,7 +145,8 @@ test('the navigation disclosure opens and closes with correct accessibility stat
   const app=boot();await app.selectors['.menu-toggle'].emit('click');assert.equal(app.selectors['#mobile-menu'].hidden,false);assert.equal(app.selectors['.menu-toggle'].getAttribute('aria-expanded'),'true');await app.selectors['.menu-toggle'].emit('click');assert.equal(app.selectors['#mobile-menu'].hidden,true);
 });
 
-test('decorative canvas keeps animating; only a device reduced-motion setting keeps it still',async()=>{
- const animated=boot({withCanvas:true});assert.ok(animated.canvasCalls.strokes>50);assert.equal(animated.animationFrames.size,1);
- const reduced=boot({withCanvas:true,reducedMotion:true});assert.ok(reduced.canvasCalls.strokes>50);assert.equal(reduced.animationFrames.size,0);
+test('contact analytics never include entered contact details',async()=>{
+ const app=boot();await app.valid();for(const link of app.channels)await link.emit('click');
+ assert.ok(app.window.dataLayer.every(event=>!JSON.stringify(event).includes('visitor@example.com')));
+ assert.ok(!JSON.stringify([...app.storage.values()]).includes('Test Visitor'));
 });

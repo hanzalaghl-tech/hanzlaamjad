@@ -15,6 +15,46 @@
       "source": "/:path*/index.html",
       "destination": "/:path*/",
       "permanent": true
+    },
+    {
+      "source": "/gohighlevel-expert",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/automation-expert",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/funnel-expert",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/gohighlevel-saas-mode-setup",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/gohighlevel-snapshots",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/gohighlevel-integrations",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/gohighlevel-expert-pakistan",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/#privacy",
+      "permanent": true
     }
   ],
   "headers": [
@@ -41,6 +81,19 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/assets/hanzla-amjad-resume.pdf",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"Hanzla-Amjad-CV.pdf\""
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
         }
       ]
     }

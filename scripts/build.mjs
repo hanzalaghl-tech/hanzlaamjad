@@ -3,10 +3,8 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import config from '../site.config.mjs';
-import { allPages } from '../src/content.mjs';
 import { page, button } from '../src/layout.mjs';
 import { home } from '../src/home.mjs';
-import { serviceBody, privacyBody } from '../src/service-page.mjs';
 
 export const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -37,16 +35,10 @@ export function resolveContext(env = process.env) {
 export function renderPages(context) {
   const pages = [{
     path: '/', file: 'index.html',
-    title: 'GoHighLevel Expert & Automation Specialist | Hanzla Amjad',
-    description: 'Hanzla Amjad is a GoHighLevel (GHL) expert and automation specialist. Get connected CRM systems, funnels and follow-ups built around your business.',
+    title: 'Hanzla Amjad | GoHighLevel & AI Automation Expert',
+    description: 'GoHighLevel expert Hanzla Amjad builds CRM systems, Make integrations, AI booking agents and sales funnels. Explore real projects and discuss your next build.',
     body: home(context)
   }];
-  for (const service of allPages) pages.push({
-    path: `/${service.slug}/`, file: `${service.slug}/index.html`,
-    title: service.title, description: service.description,
-    body: serviceBody(service), service
-  });
-  pages.push({path:'/privacy/', file:'privacy/index.html', title:'Privacy | Hanzla Amjad', description:'How Hanzla Amjad’s portfolio handles project inquiries, contact information, motion preferences and campaign attribution.', body:privacyBody()});
   pages.push({path:'/404/',file:'404.html',title:'Page not found | Hanzla Amjad',description:'This page is not available. Return to Hanzla Amjad’s portfolio or start a conversation.',noindex:true,body:`<section class="not-found wrap"><p class="eyebrow">404 · A small detour</p><h1>Let’s get you<br><em>back in flow.</em></h1><p>That page isn’t here. The portfolio is a good place to start.</p>${button('Back to the portfolio','/')}</section>`});
   return pages.map(item=>({...item,html:page({...item,context})}));
 }
@@ -65,7 +57,7 @@ export async function build({env=process.env}={}) {
   const hash=value=>createHash('sha256').update(value).digest('hex').slice(0,10);
   context.stylesheet=`/assets/styles.${hash(css)}.css`;
   context.script=`/assets/app.${hash(js)}.js`;
-  for(const file of ['hanzla-photo.jpg','hanzla-avatar.jpg','social-card.jpg','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','fonts/bricolage-grotesque-latin-wght.woff2','fonts/fraunces-latin-400-italic.woff2']) await access(path.join(rootDir,'public/assets',file));
+  for(const file of ['ha-logo.png','hanzla-photo.jpg','hanzla-avatar.jpg','social-card.png','hanzla-amjad-resume.pdf','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','fonts/bricolage-grotesque-latin-wght.woff2']) await access(path.join(rootDir,'public/assets',file));
   for(const file of ['favicon.ico','site.webmanifest']) await access(path.join(rootDir,'public',file));
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
@@ -79,6 +71,11 @@ export async function build({env=process.env}={}) {
     const file=path.join(output,item.file);
     await mkdir(path.dirname(file),{recursive:true});
     await writeFile(file,item.html);
+  }
+  // Preview-only device viewport for visual QA; never emitted in production.
+  if (env.VERCEL_ENV === 'preview') {
+    await mkdir(path.join(output,'_review'),{recursive:true});
+    await writeFile(path.join(output,'_review/index.html'),`<!doctype html><html><head><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Portfolio visual review</title><style>body{background:#ddd;padding:24px;font:14px Arial}iframe{display:block;background:#fff;border:1px solid #999}h2{margin:12px 0}</style></head><body><h2>Phone · 375px</h2><iframe title="Phone preview" src="/" width="375" height="860"></iframe><h2>Tablet · 768px</h2><iframe title="Tablet preview" src="/" width="768" height="900"></iframe></body></html>`);
   }
   await writeFile(path.join(output,'sitemap.xml'),renderSitemap(pages,context));
   // Crawl access allows search engines to see the preview pages' noindex directive.

@@ -23,23 +23,13 @@ test('production pages have unique metadata, one h1 and the configured canonical
     const ids=extract(p.html,/\bid="([^"]+)"/g);assert.equal(ids.length,new Set(ids).size,`${p.path}: duplicate id`);
   }
 });
-test('service pages contain distinct service content and valid structured data',()=>{
-  const services=pages.filter(p=>p.service);assert.equal(services.length,7);
-  for(const p of pages){
-    const blocks=extract(p.html,/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g);
-    assert.equal(blocks.length,1);
-    const graph=JSON.parse(blocks[0])['@graph'];assert.ok(graph.some(n=>n['@type']==='Person'));
-    assert.ok(!graph.some(n=>n['@type']==='AggregateRating'||n.aggregateRating));
-    if(p.service){
-      const page=graph.find(n=>n['@type']==='WebPage');
-      const service=graph.find(n=>n['@type']==='Service');
-      const breadcrumb=graph.find(n=>n['@type']==='BreadcrumbList');
-      assert.equal(page.mainEntity['@id'],service['@id']);
-      assert.equal(page.breadcrumb['@id'],breadcrumb['@id']);
-      assert.equal(service.provider['@id'],graph.find(n=>n['@type']==='Person')['@id']);
-      assert.ok(p.body.replace(/<[^>]+>/g,' ').split(/\s+/).length>450,`${p.path}: insufficient service detail`);
-    }
-  }
+test('the single landing page describes actual services and all four projects',()=>{
+  assert.equal(pages.filter(p=>!p.noindex).length,1);
+  const graph=JSON.parse(extract(pages[0].html,/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)[0])['@graph'];
+  assert.ok(graph.some(n=>n['@type']==='Person'));
+  assert.equal(graph.filter(n=>n['@type']==='Service').length,5);
+  assert.equal(graph.find(n=>n['@type']==='ItemList').itemListElement.length,4);
+  assert.ok(!graph.some(n=>n['@type']==='AggregateRating'||n.aggregateRating));
 });
 test('every local page link and fragment points to a generated page or element',()=>{
   const map=new Map(pages.map(p=>[p.path,p]));
@@ -56,7 +46,7 @@ test('every local page link and fragment points to a generated page or element',
 });
 test('sitemap includes only indexable pages and consistently uses the custom domain',()=>{
   const xml=renderSitemap(pages,context);const urls=extract(xml,/<loc>([^<]+)<\/loc>/g);
-  assert.equal(urls.length,9);assert.equal(new Set(urls).size,9);assert.ok(urls.every(u=>u.startsWith(domain+'/')));assert.ok(!urls.some(u=>u.includes('/404/')));
+  assert.equal(urls.length,1);assert.equal(new Set(urls).size,1);assert.ok(urls.every(u=>u.startsWith(domain+'/')));assert.ok(!urls.some(u=>u.includes('/404/')));
 });
 test('Vercel previews use noindex while canonical URLs still identify production',()=>{
   const preview=resolveContext({SITE_URL:domain,VERCEL_ENV:'preview'});assert.equal(preview.indexable,false);
@@ -76,7 +66,7 @@ test('invalid domain configuration cannot introduce paths or markup into SEO URL
 test('Vercel publishes the built directory and preserves true missing-page responses',async()=>{
   const config=JSON.parse(await readFile(path.join(rootDir,'vercel.json'),'utf8'));
   assert.equal(config.framework,null);assert.equal(config.outputDirectory,'dist');assert.equal(config.buildCommand,'npm run build');assert.equal(config.trailingSlash,true);assert.ok(!config.rewrites);
-  for(const file of ['social-card.jpg','icons/apple-touch-icon.png','icons/icon-192.png','icons/icon-512.png','hanzla-photo.jpg','hanzla-avatar.jpg','fonts/bricolage-grotesque-latin-wght.woff2','fonts/fraunces-latin-400-italic.woff2'])await access(path.join(rootDir,'public/assets',file));
+  for(const file of ['social-card.png','icons/apple-touch-icon.png','icons/icon-192.png','icons/icon-512.png','hanzla-photo.jpg','hanzla-avatar.jpg','fonts/bricolage-grotesque-latin-wght.woff2','fonts/fraunces-latin-400-italic.woff2'])await access(path.join(rootDir,'public/assets',file));
   for(const file of ['favicon.ico','site.webmanifest'])await access(path.join(rootDir,'public',file));
   const packageInfo=JSON.parse(await readFile(path.join(rootDir,'package.json'),'utf8'));assert.equal(Object.keys(packageInfo.dependencies||{}).length,0);
 });
