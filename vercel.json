@@ -22,7 +22,17 @@
       "permanent": true
     },
     {
+      "source": "/gohighlevel-expert/",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
       "source": "/automation-expert",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/automation-expert/",
       "destination": "/#services",
       "permanent": true
     },
@@ -32,7 +42,17 @@
       "permanent": true
     },
     {
+      "source": "/funnel-expert/",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
       "source": "/gohighlevel-saas-mode-setup",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/gohighlevel-saas-mode-setup/",
       "destination": "/#services",
       "permanent": true
     },
@@ -42,7 +62,17 @@
       "permanent": true
     },
     {
+      "source": "/gohighlevel-snapshots/",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
       "source": "/gohighlevel-integrations",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/gohighlevel-integrations/",
       "destination": "/#services",
       "permanent": true
     },
@@ -52,7 +82,17 @@
       "permanent": true
     },
     {
+      "source": "/gohighlevel-expert-pakistan/",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
       "source": "/privacy",
+      "destination": "/#privacy",
+      "permanent": true
+    },
+    {
+      "source": "/privacy/",
       "destination": "/#privacy",
       "permanent": true
     }
