@@ -77,10 +77,10 @@ test('the home page has no pause control or scroll cue, and its H1 carries the p
   const h1=home.html.match(/<h1[\s\S]*?<\/h1>/)[0].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
   assert.match(h1,/GoHighLevel/);
 });
-test('the favicon is the portrait and is declared in the head of every page',()=>{
+test('the HA favicon and touch icon are declared in the head of every page',()=>{
   for(const p of pages){
-    assert.ok(p.html.includes('<link rel="icon" href="/favicon.ico"'),p.path);
-    assert.ok(p.html.includes('rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"'),p.path);
+    assert.ok(p.html.includes('<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/ha-icon-96.png"'),p.path);
+    assert.ok(p.html.includes('rel="apple-touch-icon" href="/assets/icons/ha-apple-touch-icon.png"'),p.path);
     assert.ok(p.html.includes('rel="manifest" href="/site.webmanifest"'),p.path);
   }
 });
