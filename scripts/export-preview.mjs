@@ -5,15 +5,17 @@ const context=resolveContext({});context.indexable=false;
 let html=renderPages(context).find(p=>p.path==='/').html;
 let css=await readFile(path.join(rootDir,'public/assets/styles.css'),'utf8');
 const js=await readFile(path.join(rootDir,'public/assets/script.js'),'utf8');
+const chat=await readFile(path.join(rootDir,'public/assets/chat.js'),'utf8');
 const types={'.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png','.pdf':'application/pdf','.woff2':'font/woff2','.ico':'image/x-icon','.webmanifest':'application/manifest+json'};
 const cache=new Map();
 async function data(uri){if(cache.has(uri))return cache.get(uri);const p=path.join(rootDir,'public',uri);const result=`data:${types[path.extname(p)]||'application/octet-stream'};base64,${(await readFile(p)).toString('base64')}`;cache.set(uri,result);return result;}
 for(const match of [...css.matchAll(/url\('([^']+)'\)/g)])css=css.replace(match[0],`url(${await data(match[1])})`);
 html=html.replace(/<link rel="preload"[^>]+>/g,'').replace(/<link rel="stylesheet"[^>]+>/,()=>`<style>${css}</style>`);
 html=html.replace(/<script src="\/assets\/[^\"]+" defer><\/script>/,'');
+html=html.replace(/<script type="module" src="\/assets\/chat.js"><\/script>/,'');
 for(const match of [...html.matchAll(/(["'])(\/assets\/[^"']+)\1/g)])html=html.replaceAll(match[0],match[1]+await data(match[2])+match[1]);
 html=html.replace('id="dialog-original"','download="project-screenshot.webp" id="dialog-original"').replace('Open full-size image','Download full-size image');
-html=html.replace('</body>',()=>`<script>${js}</script></body>`);
+html=html.replace('</body>',()=>`<script>${js}</script><script type="module">${chat}</script></body>`);
 const destination=path.join(rootDir,'preview');await mkdir(destination,{recursive:true});
 await writeFile(path.join(destination,'index.html'),html);
 console.log('Self-contained review copy: preview/index.html. Assets and the CV are embedded; production remains in dist/.');

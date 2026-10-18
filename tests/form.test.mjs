@@ -9,10 +9,11 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const html=renderPages(resolveContext({}))[0].html;
 const decode=value=>value.replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 const attrs=source=>Object.fromEntries([...source.matchAll(/([a-zA-Z][\w-]*)(?:="([^"]*)")?/g)].map(m=>[m[1],decode(m[2]||'')]));
+const contactHtml=html.match(/<form id="contactForm"[\s\S]*?<\/form>/)[0];
 const fixture={
- fields:[...html.matchAll(/<(?:input|select|textarea)\b([^>]*)>/g)].map(m=>attrs(m[1])),
- options:[...html.matchAll(/<option(?:\s[^>]*)?>([^<]+)<\/option>/g)].map(m=>decode(m[1])),
- action:html.match(/<form[^>]*action="([^"]+)"/)[1],
+ fields:[...contactHtml.matchAll(/<(?:input|select|textarea)\b([^>]*)>/g)].map(m=>attrs(m[1])),
+ options:[...contactHtml.matchAll(/<option(?:\s[^>]*)?>([^<]+)<\/option>/g)].map(m=>decode(m[1])),
+ action:contactHtml.match(/<form[^>]*action="([^"]+)"/)[1],
  services:[],
  channels:[...html.matchAll(/<a\b([^>]*data-channel[^>]*)>/g)].map(m=>attrs(m[1]))
 };

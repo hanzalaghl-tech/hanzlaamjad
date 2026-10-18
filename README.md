@@ -43,3 +43,11 @@ The existing Google Analytics ID is preserved on production. Only non-contact in
 The main content and project summaries are server-generated HTML. The build produces one indexable landing page, a real 404, canonical metadata, Open Graph/Twitter cards, Person/WebSite/WebPage/Service/project structured data, a sitemap and robots.txt. Images have dimensions and below-the-fold assets are lazy-loaded; fonts are self-hosted. No rankings, testimonials or business outcomes are invented.
 
 `npm test` covers metadata, links, assets, gallery navigation, CV location, previews and contact handling with mocked provider responses. A real external form submission and inbox receipt are separate from the mocked checks.
+
+### Portfolio assistant and client feedback
+
+The HA widget provides factual answers about the listed services and projects, then collects a name, reply email, project brief and optional WhatsApp number. It is a guided portfolio assistant, not a generative AI service. The visitor reviews their brief and explicitly chooses **Send my brief** before their details and conversation are submitted through the same Web3Forms key as the contact form. Success requires a positive API acknowledgement; failures retain the entered details and timeouts avoid automatic resends. Chat details stay in page memory and are not placed in analytics or browser storage.
+
+`src/reviews.mjs` accepts verified Upwork client quotations. Automated access to the provided profile was blocked during this update, so the published section links to the actual profile without inventing quotes, ratings or client names. Add sourced feedback to its `reviews` array when supplied.
+
+`public/assets/chat.js` contains the answer catalogue, intake state machine and email handoff. It is emitted with a content hash during the static build. `tests/chat.test.mjs` covers validation, source-grounded answers, explicit send, failure handling and repeat-send protection.

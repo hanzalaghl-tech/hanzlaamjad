@@ -28,7 +28,7 @@ export function resolveContext(env = process.env) {
     origin, indexable,
     accessKey: env.WEB3FORMS_ACCESS_KEY?.trim() || config.web3formsKey,
     verification: env.GOOGLE_SITE_VERIFICATION?.trim() || config.googleSiteVerification,
-    stylesheet: '/assets/styles.css', script: '/assets/script.js'
+    stylesheet: '/assets/styles.css', script: '/assets/script.js', chatScript:'/assets/chat.js'
   };
 }
 
@@ -54,9 +54,11 @@ export async function build({env=process.env}={}) {
   const output=path.join(rootDir,'dist');
   const css=await readFile(path.join(rootDir,'public/assets/styles.css'));
   const js=await readFile(path.join(rootDir,'public/assets/script.js'));
+  const chat=await readFile(path.join(rootDir,'public/assets/chat.js'));
   const hash=value=>createHash('sha256').update(value).digest('hex').slice(0,10);
   context.stylesheet=`/assets/styles.${hash(css)}.css`;
   context.script=`/assets/app.${hash(js)}.js`;
+  context.chatScript=`/assets/chat.${hash(chat)}.js`;
   for(const file of ['ha-logo.png','hanzla-photo.jpg','hanzla-avatar.jpg','social-card.png','hanzla-amjad-resume.pdf','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','fonts/bricolage-grotesque-latin-wght.woff2']) await access(path.join(rootDir,'public/assets',file));
   for(const file of ['favicon.ico','site.webmanifest']) await access(path.join(rootDir,'public',file));
   await rm(output,{recursive:true,force:true});
@@ -64,8 +66,10 @@ export async function build({env=process.env}={}) {
   await cp(path.join(rootDir,'public'),output,{recursive:true});
   await rm(path.join(output,'assets/styles.css'));
   await rm(path.join(output,'assets/script.js'));
+  await rm(path.join(output,'assets/chat.js'));
   await writeFile(path.join(output,context.stylesheet),css);
   await writeFile(path.join(output,context.script),js);
+  await writeFile(path.join(output,context.chatScript),chat);
   const pages=renderPages(context);
   for(const item of pages) {
     const file=path.join(output,item.file);
