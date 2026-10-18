@@ -37,7 +37,7 @@
     menu.querySelectorAll('a').forEach(link => link.addEventListener('click',()=>closeMenu()));
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!menu.hidden)closeMenu(true);});
     document.addEventListener('click',event=>{if(!menu.hidden&&!event.target.closest('.site-header'))closeMenu();});
-    window.addEventListener('resize',()=>{if(window.innerWidth>600)closeMenu();},{passive:true});
+    window.addEventListener('resize',()=>{if(window.innerWidth>820)closeMenu();},{passive:true});
   }
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -134,6 +134,14 @@
     try { sessionStorage.setItem('ha-campaign-v1', JSON.stringify(attribution)); } catch (_) {}
   }
 
+
+  const pricingGrid=document.querySelector('.pricing-grid');
+  if(pricingGrid)document.querySelectorAll('[data-pricing-filter]').forEach(button=>button.addEventListener('click',()=>{
+    const filter=button.dataset.pricingFilter;
+    pricingGrid.dataset.activeFilter=filter;
+    document.querySelectorAll('[data-pricing-filter]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    pricingGrid.querySelectorAll('[data-plan-type]').forEach(card=>{card.hidden=filter!=='all'&&card.dataset.planType!==filter;});
+  }));
 
   const form = document.querySelector('#contactForm');
   if (!form) {
