@@ -9,7 +9,7 @@ function ready(){
  return chat;
 }
 test('the assistant answers portfolio questions and hands off unknown claims',()=>{
- assert.match(answerQuestion('How much does this cost?'),/Premium \$100/);assert.match(answerQuestion('What is the AI build price?'),/\$1,500/);assert.match(answerQuestion('What is the Flexible rate?'),/\$25\/hour/);
+ assert.match(answerQuestion('How much does this cost?'),/Flexible \$25/);assert.match(answerQuestion('What is the AI build price?'),/\$1,500/);assert.match(answerQuestion('What is the Flexible rate?'),/\$25\/hour/);
  assert.match(answerQuestion('Can you build a Retell phone call flow?'),/Retell/);
  assert.match(answerQuestion('Can A2P approval be guaranteed?'),/can’t be guaranteed/);
  assert.equal(answerQuestion('Who won the football match yesterday?'),null);
@@ -23,7 +23,7 @@ test('the assistant proactively collects project, name, email and required phone
  c.receive('It should qualify leads and book appointments in GoHighLevel.');assert.equal(c.stage,'name');
  c.receive('  ');assert.equal(c.stage,'name');c.receive('Test Visitor');assert.equal(c.stage,'email');
  c.receive('not an email');assert.equal(c.stage,'email');c.receive('visitor@example.com');assert.equal(c.stage,'phone');
- c.receive('Skip');assert.equal(c.stage,'phone');c.receive('123');assert.equal(c.stage,'phone');
+ assert.match(c.prompt(),/WhatsApp number/);c.receive('Skip');assert.equal(c.stage,'phone');c.receive('123');assert.equal(c.stage,'phone');
  const review=c.receive('+44 7532 677615');assert.equal(review.review,true);assert.equal(c.stage,'confirm');assert.equal(c.status,'idle');
  assert.equal(c.lead.phone,'+44 7532 677615');assert.equal(c.receive('Send my brief').submit,true);
 });
@@ -76,7 +76,7 @@ test('the updated page has feedback above contact and only public configuration 
 test('email handoff rejects missing phone details before any network request',async()=>{
  const c=ready();let called=false;await assert.rejects(deliverBrief({endpoint:'https://api.web3forms.com/submit',accessKey:'test',lead:{...c.lead,phone:''},messages:c.messages,fetchImpl:async()=>{called=true;}}),/invalid_brief/);assert.equal(called,false);
 });
-test('pricing matches the six plans and rates explicitly selected by Hanzla',()=>{
+test('pricing matches the four plans and rates explicitly selected by Hanzla',()=>{
  const html=renderPages(resolveContext({}))[0].html;const pricing=html.match(/<section class="pricing-section[\s\S]*?<\/section>/)[0];
- assert.equal((pricing.match(/data-plan-type=/g)||[]).length,6);for(const rate of ['$1,500','$750','$100','$60','$25','$20'])assert.ok(pricing.includes(rate),rate);assert.equal((pricing.match(/data-start-chat/g)||[]).length,7);assert.match(pricing,/40 hours per week/);assert.match(pricing,/30 days of support/);assert.match(pricing,/20-minute/);
+ assert.equal((pricing.match(/data-plan-type=/g)||[]).length,4);for(const rate of ['$1,500','$750','$25','$20'])assert.ok(pricing.includes(rate),rate);assert.equal((pricing.match(/data-start-chat/g)||[]).length,5);assert.ok(!pricing.includes('$100'));assert.ok(!pricing.includes('$60'));assert.ok(!answerQuestion('What is the hourly rate?').includes('$100'));assert.ok(!answerQuestion('What is the hourly rate?').includes('$60'));assert.match(pricing,/40 hours per week/);assert.match(pricing,/30 days of support/);assert.match(pricing,/20-minute/);
 });

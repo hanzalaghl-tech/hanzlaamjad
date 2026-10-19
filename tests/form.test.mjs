@@ -86,7 +86,7 @@ function boot({ fetchImpl, query = '', reducedMotion = false, storageBlocked = f
   };
   vm.runInNewContext(code,sandbox,{filename:'script.js'});
   const fill = async (id,value) => {selectors['#cf-'+id].value=value;await selectors['#cf-'+id].emit('input');};
-  const valid = async () => {await fill('name',' Test Visitor ');await fill('email','visitor@example.com');await fill('message',' I need a connected funnel and CRM. ');await fill('subject','Funnels & websites');};
+  const valid = async () => {await fill('name',' Test Visitor ');await fill('email','visitor@example.com');await fill('message',' I need a connected funnel and CRM. ');await fill('subject','Funnels & websites');await fill('whatsapp','+44 7532 677615');};
   return {selectors,form,root,window,calls,timers,services,channels,fill,valid,storage,canvasCalls,animationFrames,submit:()=>form.emit('submit')};
 }
 
@@ -117,7 +117,8 @@ test('HTTP errors and network errors keep an email fallback and allow retry',asy
 test('empty, whitespace-only and invalid phone details never reach the endpoint',async()=>{
   const app=boot();await app.submit();assert.equal(app.calls.length,0);await app.valid();await app.fill('name','  ');await app.submit();assert.equal(app.calls.length,0);
   await app.fill('name','Visitor');await app.fill('whatsapp','hello 123');await app.submit();assert.equal(app.calls.length,0);assert.equal(app.selectors['#phone-error'].hidden,false);
-  await app.fill('whatsapp','');await app.submit();assert.equal(app.calls.length,1);
+  await app.fill('whatsapp','');await app.submit();assert.equal(app.calls.length,0);assert.equal(app.selectors['#phone-error'].hidden,false);
+  await app.fill('whatsapp','+44 7532 677615');await app.submit();assert.equal(app.calls.length,1);
 });
 test('duplicate submissions are suppressed while the first request is pending',async()=>{
   let resolve;const app=boot({fetchImpl:()=>new Promise(r=>{resolve=r;})});await app.valid();const pending=app.submit();await app.submit();assert.equal(app.calls.length,1);assert.equal(app.selectors['#submitBtn'].disabled,true);

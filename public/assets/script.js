@@ -175,8 +175,8 @@
   function validatePhone(showError = false) {
     const value = phone.value.trim();
     const digits = value.replace(/\D/g, '').length;
-    const valid = value === '' || (/^\+?[\d\s().-]+$/.test(value) && digits >= 7 && digits <= 15);
-    phone.setCustomValidity(valid ? '' : 'Please enter a phone number with 7–15 digits.');
+    const valid = /^\+?[\d\s().-]+$/.test(value) && digits >= 7 && digits <= 15;
+    phone.setCustomValidity(valid ? '' : 'Please enter your WhatsApp number with 7–15 digits, including your country code.');
     phoneError.hidden = valid || !showError;
     if (valid) phone.removeAttribute('aria-invalid');
     else if (showError) phone.setAttribute('aria-invalid', 'true');

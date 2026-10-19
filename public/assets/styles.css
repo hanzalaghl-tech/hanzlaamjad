@@ -105,7 +105,7 @@
 .pricing-filters>button{font-size:12px;line-height:1.4;border-radius:23px;padding:11px 16px;min-height:40px;transition:background .2s,color .2s}
 .pricing-filters>button[aria-pressed=true]{background:var(--dark);color:#fff;box-shadow:0 2px 6px #0000000d}
 .pricing-filters>button:not([aria-pressed=true]):hover{background:#f8f8f5}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
 .pricing-grid[data-active-filter=project],.pricing-grid[data-active-filter=hourly]{grid-template-columns:repeat(2,minmax(0,1fr))}
 .pricing-card{display:flex;flex-direction:column;border:1px solid #d6d6cc;border-radius:15px;background:var(--paper);padding:27px 23px;min-width:0}
 .pricing-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:30px;min-height:23px;font-size:8px;letter-spacing:.06em;color:var(--muted)}
