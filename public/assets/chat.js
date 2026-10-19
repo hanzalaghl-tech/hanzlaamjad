@@ -11,7 +11,16 @@ export function answerQuestion(input){
  if(/country code|phone format|number format/.test(q))return 'Use your own country code followed by your phone number, for example +44 7532 677615. A number with 7–15 digits is accepted.';
  if(/privacy|my data|my information|details stored|store my details/.test(q))return 'Your details and this conversation are emailed through Web3Forms only after you choose Send my brief. Unsent chat details stay in this page’s memory and clear when you reload or start a new chat. Chat contents are not added to analytics.';
  if(/^(hi|hello|hey|salam|assalam[ -]?o[ -]?alaikum|aoa)[!.\s]*$/.test(q))return 'Hi! I can explain Hanzla’s services and projects, or help you send him a project brief. What would you like to know?';
- if(/\b(price|pricing|cost|costs|budget|rate|rates|quote|charges|fee|how much|hourly|monthly|per hour|kitn[aeiy]|paisa|qeemat)\b/.test(q))return 'Pricing depends on the scope, tools and integrations involved. The Pricing section has project builds and ongoing support, all quoted to your scope. Tell me what you need and I’ll help you send the details to Hanzla.';
+ if(/\b(price|pricing|cost|costs|budget|rate|rates|quote|charges|fee|how much|hourly|monthly|per hour|kitn[aeiy]|paisa|qeemat)\b/.test(q)){
+  const note=' All rates are in USD. Project prices are starting rates; the final quote follows a free 20-minute call.';
+  if(/\b(ai|agent|chatbot|voice|retell|gpt)\b/.test(q))return 'AI Builds starts at $1,500, including voice/chat agent setup, knowledge-base training, model integration, deployment and 30 days of support.'+note;
+  if(/\b(api|webhook|webhooks|integration|integrations)\b/.test(q))return 'API & Webhooks starts at $750, with custom endpoints, platform integrations, secure credential setup and documentation.'+note;
+  if(/\bpremium\b/.test(q))return 'Premium is $100/hour for strategy, design and technical implementation, with onboarding/training and priority responses.'+note;
+  if(/\bbasic\b/.test(q))return 'Basic is $60/hour for technical buildouts, up to 20 hours per week, with flexible engagement and direct communication.'+note;
+  if(/\bflexible\b/.test(q))return 'Flexible is $25/hour, up to 30 hours per week, for ongoing technical work in Hanzla’s time zone.'+note;
+  if(/\b(dedicated|full.?time)\b/.test(q))return 'Dedicated is $20/hour for a 40-hour week, embedded with your team for long-term GHL and AI automation work.'+note;
+  return 'AI Builds: from $1,500. API & Webhooks: from $750. Hourly plans: Premium $100, Basic $60, Flexible $25, and Dedicated $20/hour (40 hours/week).'+note;
+ }
  if(/\b(how long|timeline|turnaround|deadline|delivery time|kitna time|kab tak|duration)\b/.test(q))return 'The timeline depends on the project scope and access to the tools involved. Hanzla will confirm an estimate after reviewing your brief; I can’t promise a delivery date on his behalf.';
  if(/\b(upwork|reviews?|testimonials?|feedback)\b/.test(q))return 'You can explore Hanzla’s work history and client feedback on his Upwork profile. Two shared 5-star feedback excerpts from Jawad Ali S. and Saad A. are in the Reviews section. You can read more on the linked Upwork profile.';
  if(/\b(ghost|newsletter|custom values|publish|publishing)\b/.test(q))return 'One featured project connects Ghost → Make → GoHighLevel. When a post is published, Make processes its content, updates GHL Custom Values and triggers an email workflow for the contacts with the selected tag. You can follow the screenshots in Selected work.';
