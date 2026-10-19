@@ -35,8 +35,8 @@ export function resolveContext(env = process.env) {
 export function renderPages(context) {
   const pages = [{
     path: '/', file: 'index.html',
-    title: 'Hanzla Amjad | GoHighLevel & AI Automation Expert',
-    description: 'GoHighLevel expert Hanzla Amjad builds CRM systems, Make integrations, AI booking agents and sales funnels. Explore real projects and discuss your next build.',
+    title: 'Hanzla Amjad | GoHighLevel (GHL) Expert & Automation',
+    description: 'Hanzla Amjad is a GoHighLevel (GHL) expert for CRM setup, workflow automation, Make integrations, AI booking and sales funnels. See projects and pricing.',
     body: home(context)
   }];
   pages.push({path:'/404/',file:'404.html',title:'Page not found | Hanzla Amjad',description:'This page is not available. Return to Hanzla Amjad’s portfolio or start a conversation.',noindex:true,body:`<section class="not-found wrap"><p class="eyebrow">404 · A small detour</p><h1>Let’s get you<br><em>back in flow.</em></h1><p>That page isn’t here. The portfolio is a good place to start.</p>${button('Back to the portfolio','/')}</section>`});
@@ -45,7 +45,7 @@ export function renderPages(context) {
 
 export function renderSitemap(pages, context) {
   const escapeXml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const urls = context.indexable ? pages.filter(p=>!p.noindex).map(p=>`  <url><loc>${escapeXml(context.origin+p.path)}</loc></url>`).join('\n') : '';
+  const urls = context.indexable ? pages.filter(p=>!p.noindex).map(p=>`  <url><loc>${escapeXml(context.origin+p.path)}</loc>${/^\d{4}-\d{2}-\d{2}$/.test(config.contentUpdatedAt||'')?`<lastmod>${config.contentUpdatedAt}</lastmod>`:''}</url>`).join('\n') : '';
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 

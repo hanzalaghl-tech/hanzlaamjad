@@ -1,5 +1,7 @@
 export default {
   name: 'Hanzla Amjad',
+  // Update only when the public content materially changes. Not a deployment timestamp.
+  contentUpdatedAt: '2026-10-19',
   // Other spellings people may search for. Used in structured data only.
   alternateNames: ['Hanzala Amjad'],
   // Your real HTTPS domain, for example 'https://yourdomain.com'.

@@ -47,6 +47,13 @@
     root.classList.add('js');
   }
 
+  // Open a linked service or FAQ before the visitor reads its anchor target.
+  function openLinkedDetail(){
+    const hash=window.location.hash||'';
+    if(/^#(?:service|faq)-[a-z-]+$/.test(hash))document.querySelector(hash)?.setAttribute('open','');
+  }
+  openLinkedDetail();window.addEventListener('hashchange',openLinkedDetail);
+
   // Every gallery follows the sequence supplied in src/projects.mjs. No autoplay.
   const dataElement = document.querySelector('#portfolio-data');
   const galleryDialog = document.querySelector('#gallery-dialog');

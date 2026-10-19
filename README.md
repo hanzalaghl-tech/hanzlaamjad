@@ -51,3 +51,7 @@ The HA widget provides factual answers about the listed services and projects, p
 `src/reviews.mjs` contains two client feedback excerpts transcribed from the supplied Upwork screenshot. The source is truncated, so unseen endings are not completed. `src/pricing.mjs` defines the four package rates and scopes Hanzla explicitly adopted on 19 October 2026: AI Builds from $1,500, API & Webhooks from $750, Flexible $25/hour and Dedicated $20/hour. Chat pricing answers use these same rates.
 
 `public/assets/chat.js` contains the answer catalogue, intake state machine and email handoff. It is emitted with a content hash during the static build. `tests/chat.test.mjs` covers validation, source-grounded answers, explicit send, failure handling and repeat-send protection.
+
+## Search content
+
+The landing page remains the only indexable page. `src/services.mjs` is the shared source for factual service descriptions and the native FAQ section; `src/layout.mjs` uses the same service copy in JSON-LD. Topic redirects open matching service sections. `site.config.mjs` records an explicit substantive content revision date for sitemap lastmod. Search implementation and indexing follow-up are documented in `SEO-AUDIT.md`.

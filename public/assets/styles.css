@@ -161,3 +161,7 @@
 @media(min-width:601px) and (max-width:820px){.desktop-nav{display:none}.menu-toggle{display:inline-grid}.menu-toggle span{display:block;width:15px;height:1px;background:currentColor;margin:2px}.nav-shell{gap:20px}}
 
 .pricing-from{font-size:14px;letter-spacing:0;color:var(--muted);font-weight:400}.pricing-card-featured .pricing-from{color:#c4c4b8}
+
+/* Search-friendly service details and compact, native FAQ disclosure. */
+.service-content .service-proof-link{white-space:normal;font-size:13px;color:#f6f6ee;margin-top:10px}.faq-section{border-top:1px solid var(--line)}.faq-list{border-top:1px solid var(--line)}.faq-item{border-bottom:1px solid var(--line);scroll-margin-top:110px}.service-item{scroll-margin-top:110px}.faq-item summary{display:flex;justify-content:space-between;gap:28px;align-items:center;list-style:none;cursor:pointer;padding:27px 0}.faq-item summary::-webkit-details-marker{display:none}.faq-item h3{font-size:clamp(20px,2.2vw,28px);line-height:1.2;letter-spacing:-.035em}.faq-item summary>span{font-size:30px;line-height:1;transition:transform .2s}.faq-item[open] summary>span{transform:rotate(45deg)}.faq-answer{max-width:800px;padding:0 0 28px}.faq-answer p{font-size:16px;line-height:1.65;color:var(--muted)}.faq-answer .text-link{margin-top:12px}.hero-copy h1 span{font-size:.88em}
+@media(max-width:600px){.faq-item summary{padding:23px 0;gap:18px}.faq-answer p{font-size:15px}.faq-answer{padding-bottom:23px}.service-content .service-proof-link{font-size:12px}.hero-copy h1 span{font-size:.85em}}

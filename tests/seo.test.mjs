@@ -88,3 +88,33 @@ test('the stylesheet references only self-hosted fonts',async()=>{
   const css=await readFile(path.join(rootDir,'public/assets/styles.css'),'utf8');
   assert.ok(!/fonts\.googleapis|fonts\.gstatic|https?:\/\//.test(css.replace(/xmlns='http:\/\/www\.w3\.org\/2000\/svg'/g,'')));
 });
+
+test('service schema matches real, linked service content in the server-rendered page',async()=>{
+ const {portfolioServices}=await import('../src/services.mjs');const html=pages[0].html;
+ const graph=JSON.parse(extract(html,/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)[0])['@graph'];
+ const catalog=graph.find(n=>n['@type']==='OfferCatalog');assert.equal(catalog.itemListElement.length,portfolioServices.length);
+ const decode=value=>value.replace(/&amp;/g,'&').replace(/&#39;/g,"'");
+ for(const service of portfolioServices){
+  const node=graph.find(n=>n['@type']==='Service'&&n['@id']===domain+'/#'+service.id);assert.ok(node);assert.equal(node.description,service.description);
+  assert.ok(decode(html).includes(service.description));assert.ok(html.includes(`id="${service.id}"`));assert.ok(catalog.itemListElement.some(offer=>offer.itemOffered['@id']===node['@id']));
+ }
+ const profile=graph.find(n=>Array.isArray(n['@type'])&&n['@type'].includes('ProfilePage'));assert.ok(profile);
+ assert.equal(profile.mainEntity['@id'],graph.find(n=>n['@type']==='Person')['@id']);
+ assert.ok(!html.includes('meta name="keywords"'));assert.ok(!graph.some(n=>n['@type']==='FAQPage'||n.aggregateRating));
+});
+test('helpful FAQs and project names are readable without running client-side JavaScript',async()=>{
+ const {portfolioFaqs}=await import('../src/services.mjs');const {projects}=await import('../src/projects.mjs');const html=pages[0].html;
+ const visibleHtml=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');const decode=value=>value.replace(/&amp;/g,'&').replace(/&#39;/g,"'");
+ for(const faq of portfolioFaqs){assert.ok(decode(visibleHtml).includes(faq.question));assert.ok(decode(visibleHtml).includes(faq.answer));assert.ok(html.includes(`href="${faq.href}"`));}
+ for(const project of projects)assert.ok(decode(visibleHtml).includes(project.name));
+ assert.ok(html.indexOf('id="faq"')<html.indexOf('id="reviews"'));assert.ok(html.indexOf('id="reviews"')<html.indexOf('id="contact"'));
+});
+test('legacy topic URLs permanently land on relevant existing sections, and lastmod is a content date',async()=>{
+ const {default:site}=await import('../site.config.mjs');const routing=JSON.parse(await readFile(path.join(rootDir,'vercel.json'),'utf8'));
+ for(const r of routing.redirects.filter(r=>!r.source.includes(':'))){
+  assert.equal(r.permanent,true);const url=new URL(r.destination,domain);if(url.hash)assert.ok(pages[0].html.includes(`id="${url.hash.slice(1)}"`),r.source);
+ }
+ assert.equal(routing.redirects.find(r=>r.source==='/funnel-expert/').destination,'/#service-funnels');
+ assert.match(renderSitemap(pages,context),new RegExp(`<lastmod>${site.contentUpdatedAt}</lastmod>`));
+ assert.equal(renderSitemap(pages,context),renderSitemap(pages,context));
+});
