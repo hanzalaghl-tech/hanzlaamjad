@@ -67,16 +67,17 @@ export function createReplyScheduler({setTimer=setTimeout,clearTimer=clearTimeou
  };
 }
 const isQuestion=text=>/^(what|how|where|when|can |could |do |does |is |are |why|who|kya|kahan)|\?$/i.test(text);
+const declinesWhatsApp=text=>/^(?:skip(?: whatsapp)?|no(?: thanks)?|not now|n(?:ahi|hi|ahe|ai)(?: h(?:ai|a))?)[.!\s]*$/i.test(text)||(/\b(?:whats?app|wa)\b/i.test(text)&&/\b(?:no|not|dont|don’t|don't|without|nahi|nhi|nai|nahe)\b/i.test(text));
 const greeting=text=>/^(hi|hello|hey|salam|assalam[ -]?o[ -]?alaikum|aoa)[!.\s]*$/i.test(text);
 
 export class Conversation {
  constructor(){this.reset();}
- reset(){this.stage='need';this.lead={service:'',plan:'',name:'',email:'',phone:'',project:''};this.messages=[];this.status='idle';}
+ reset(){this.stage='need';this.lead={service:'',plan:'',name:'',email:'',phone:'',whatsappSkipped:false,project:''};this.messages=[];this.status='idle';}
  reply(text,suggestions=this.stageChoices(),review=false){this.messages.push({role:'assistant',text});return{text,suggestions,review};}
  welcome(){return this.reply('Hi! I’m Hanzla’s portfolio assistant. What would you like help with—GoHighLevel, automation, AI booking or a website? I can answer your questions and help you send him a project brief.');}
- prompt(){return {need:'What would you like to build or improve?',name:'What’s your name?',email:'What email should Hanzla reply to?',project:this.lead.service==='AI agents & booking'?'What should your agent do—answer questions, qualify leads, book appointments, or all three? Which CRM or tools do you use?':this.lead.service==='Automation & workflows'?'Which tools should connect, and what should happen automatically? A short example of the process will help.':'Tell me about the project: what needs to change, and which tools or systems are involved?',phone:'What’s your WhatsApp number, including the country code? Hanzla will use it to follow up about this project.',confirm:'Your enquiry is ready. Check your details below, then choose Send my brief to email Hanzla your name, email, WhatsApp number, project details and this conversation.'}[this.stage]||'What would you like to know?';}
- stageChoices(){return this.stage==='need'?choices:this.stage==='confirm'?['Send my brief','Edit details']:[];}
- next(){this.stage=!this.lead.project?'project':!this.lead.name?'name':!this.lead.email?'email':!this.lead.phone?'phone':'confirm';}
+ prompt(){return {need:'What would you like to build or improve?',name:'What’s your name?',email:'What email should Hanzla reply to?',project:this.lead.service==='AI agents & booking'?'What should your agent do—answer questions, qualify leads, book appointments, or all three? Which CRM or tools do you use?':this.lead.service==='Automation & workflows'?'Which tools should connect, and what should happen automatically? A short example of the process will help.':'Tell me about the project: what needs to change, and which tools or systems are involved?',phone:'What’s your WhatsApp number, including the country code? Hanzla will use it to follow up about this project. If you don’t use WhatsApp, choose Skip WhatsApp.',confirm:'Your enquiry is ready. Check your details below, then choose Send my brief to email Hanzla your name, email, project details, any WhatsApp number you shared and this conversation.'}[this.stage]||'What would you like to know?';}
+ stageChoices(){return this.stage==='need'?choices:this.stage==='phone'?['Skip WhatsApp']:this.stage==='confirm'?['Send my brief','Edit details']:[];}
+ next(){this.stage=!this.lead.project?'project':!this.lead.name?'name':!this.lead.email?'email':!this.lead.phone&&!this.lead.whatsappSkipped?'phone':'confirm';}
  advance(prefix=''){this.next();return this.reply((prefix?prefix+'\n\n':'')+this.prompt(),this.stageChoices(),this.stage==='confirm');}
  begin(service='',plan=''){
   if(['sent','uncertain','sending'].includes(this.status))return this.reply('Please start a new chat for a new enquiry, or contact Hanzla directly.');
@@ -92,7 +93,7 @@ export class Conversation {
   if(/^(cancel|cancel brief|stop)$/i.test(text)){this.reset();return this.reply('Your brief has been cleared. '+this.prompt());}
   if(/^(start a project|start|leave a brief|get a quote|hire hanzla|i want to hire you)$/i.test(text))return this.begin();
   if(['sent','uncertain'].includes(this.status))return this.reply(answerQuestion(text)||'For another enquiry, please start a new chat. Hanzla can also help by email or WhatsApp.',['Services','Project examples']);
-  const supplied=parseContactDetails(text);Object.assign(this.lead,supplied);
+  const supplied=parseContactDetails(text);Object.assign(this.lead,supplied);if(supplied.phone)this.lead.whatsappSkipped=false;
   if(Object.keys(supplied).length&&['need','project'].includes(this.stage)&&((supplied.email&&text===supplied.email)||(supplied.phone&&text===supplied.phone)||/^my name is [^,.!?]+[.!]?$/.test(text.toLowerCase())))return this.reply('Thanks, I’ve noted those contact details. '+this.prompt());
   if(this.stage==='confirm'){
    if(/^(send my brief|send|confirm|yes send)$/i.test(text))return{text:'',suggestions:[],submit:true};
@@ -112,6 +113,7 @@ export class Conversation {
    if(!isQuestion(text)&&text.length>=15&&!answer){this.lead.service='Not sure yet';this.lead.project=text;return this.advance('Thanks—that gives Hanzla a useful starting point.');}
    return this.reply((answer||'I can help with Hanzla’s services and project enquiries. For anything I can’t confirm, I’ll pass your question to him with your brief.')+'\n\n'+this.prompt());
   }
+  if(this.stage==='phone'&&declinesWhatsApp(text)){this.lead.phone='';this.lead.whatsappSkipped=true;return this.advance('No problem—Hanzla can follow up by email.');}
   // Questions remain answerable while collecting details; they never become a name or phone.
   if(isQuestion(text)&&!Object.keys(supplied).length){
    const answer=answerQuestion(text);
@@ -134,7 +136,7 @@ export class Conversation {
    return this.advance('Thank you.');
   }
   if(this.stage==='phone'){
-   if(!supplied.phone){if(!validPhone(text))return this.reply('Please add a WhatsApp number with 7–15 digits, including your country code.');this.lead.phone=text;}
+   if(!supplied.phone){if(!validPhone(text))return this.reply('Please add a WhatsApp number with 7–15 digits, including your country code, or choose Skip WhatsApp.');this.lead.phone=text;this.lead.whatsappSkipped=false;}
    return this.advance();
   }
   return this.reply((answerQuestion(text)||'Hanzla can answer that personally. You can start a new chat to leave another enquiry.')+'\n\n'+this.prompt());
@@ -142,10 +144,10 @@ export class Conversation {
 }
 
 export async function deliverBrief({endpoint,accessKey,lead,messages,attribution={},signal,fetchImpl=fetch}){
- if(!lead.name||!emailPattern.test(lead.email)||!validPhone(lead.phone)||lead.project.trim().length<10)throw new Error('invalid_brief');
+ if(!lead.name||!emailPattern.test(lead.email)||(lead.phone?!validPhone(lead.phone):lead.whatsappSkipped!==true)||lead.project.trim().length<10)throw new Error('invalid_brief');
  if(endpoint!=='https://api.web3forms.com/submit'||!accessKey)throw new Error('invalid_configuration');
  const payload=new FormData();
- for(const [key,value] of Object.entries({access_key:accessKey,from_name:'Hanzla Portfolio Chat',subject:'New portfolio chat enquiry',name:lead.name,email:lead.email,phone:lead.phone,whatsapp:lead.phone,message:lead.project,service:lead.service||'Not specified',plan:lead.plan||'General enquiry',source:'Website chat',conversation:messages.map(m=>`${m.role==='visitor'?'Visitor':'Assistant'}: ${m.text}`).join('\n\n').slice(-18000)}))payload.set(key,value);
+ for(const [key,value] of Object.entries({access_key:accessKey,from_name:'Hanzla Portfolio Chat',subject:'New portfolio chat enquiry',name:lead.name,email:lead.email,whatsapp:lead.phone||'Not provided (visitor skipped)',message:lead.project,service:lead.service||'Not specified',plan:lead.plan||'General enquiry',source:'Website chat',conversation:messages.map(m=>`${m.role==='visitor'?'Visitor':'Assistant'}: ${m.text}`).join('\n\n').slice(-18000)}))payload.set(key,value);
  for(const key of ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid','msclkid'])if(typeof attribution[key]==='string')payload.set(key,attribution[key].slice(0,250));
  const response=await fetchImpl(endpoint,{method:'POST',body:payload,headers:{Accept:'application/json'},signal});
  const result=await response.json();if(!response.ok||result.success!==true)throw new Error('submission_rejected');
@@ -158,7 +160,7 @@ export function initChat(){
  const conversation=new Conversation(),scheduler=createReplyScheduler();let sending=false,replying=false,open=false;
  function scroll(){log.scrollTop=log.scrollHeight;}
  function bubble(role,text){const row=document.createElement('div');row.className='chat-message chat-message-'+role;const label=document.createElement('span');label.className='chat-speaker';label.textContent=role==='visitor'?'You':'HA assistant';const p=document.createElement('p');p.textContent=text;row.append(label,p);log.appendChild(row);scroll();return row;}
- function addSummary(){const card=document.createElement('dl');card.className='chat-brief-summary';for(const [label,value] of [['Name',conversation.lead.name],['Email',conversation.lead.email],['Project',conversation.lead.project],['WhatsApp',conversation.lead.phone],['Service',conversation.lead.service||'General enquiry']]){const row=document.createElement('div'),term=document.createElement('dt'),detail=document.createElement('dd');term.textContent=label;detail.textContent=value;row.append(term,detail);card.appendChild(row);}log.appendChild(card);scroll();}
+ function addSummary(){const card=document.createElement('dl');card.className='chat-brief-summary';for(const [label,value] of [['Name',conversation.lead.name],['Email',conversation.lead.email],['Project',conversation.lead.project],['WhatsApp',conversation.lead.phone||'Not provided (skipped)'],['Service',conversation.lead.service||'General enquiry']]){const row=document.createElement('div'),term=document.createElement('dt'),detail=document.createElement('dd');term.textContent=label;detail.textContent=value;row.append(term,detail);card.appendChild(row);}log.appendChild(card);scroll();}
  function quickReplies(items){suggestions.replaceChildren();for(const text of items){const button=document.createElement('button');button.type='button';button.textContent=text;button.addEventListener('click',()=>handle(text));suggestions.appendChild(button);}if(conversation.stage==='need'){
    for(const [label,href] of [['View projects','/#work'],['Pricing','/#pricing'],['Upwork','https://www.upwork.com/freelancers/~017b2fcbe223c90e1a'],['WhatsApp',widget.dataset.whatsapp]]){const a=document.createElement('a');a.textContent=label;a.href=href;if(href.startsWith('https:')){a.target='_blank';a.rel='noopener noreferrer';}else a.addEventListener('click',()=>setOpen(false));suggestions.appendChild(a);}
   }}

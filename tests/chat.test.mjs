@@ -16,14 +16,14 @@ test('the assistant answers portfolio questions and hands off unknown claims',()
  const c=new Conversation();assert.match(c.receive('Tell me about secret clients').text,/worked with/);
  assert.match(c.receive('What is the weather?').text,/can’t confirm/);
 });
-test('the assistant proactively collects project, name, email and required phone',()=>{
+test('the assistant proactively collects project, name, email and optional WhatsApp',()=>{
  const c=new Conversation();
  c.receive('hello');assert.equal(c.stage,'need');
  c.receive('I need an AI agent');assert.equal(c.stage,'project');
  c.receive('It should qualify leads and book appointments in GoHighLevel.');assert.equal(c.stage,'name');
  c.receive('  ');assert.equal(c.stage,'name');c.receive('Test Visitor');assert.equal(c.stage,'email');
  c.receive('not an email');assert.equal(c.stage,'email');c.receive('visitor@example.com');assert.equal(c.stage,'phone');
- assert.match(c.prompt(),/WhatsApp number/);c.receive('Skip');assert.equal(c.stage,'phone');c.receive('123');assert.equal(c.stage,'phone');
+ assert.match(c.prompt(),/WhatsApp number/);c.receive('123');assert.equal(c.stage,'phone');
  const review=c.receive('+44 7532 677615');assert.equal(review.review,true);assert.equal(c.stage,'confirm');assert.equal(c.status,'idle');
  assert.equal(c.lead.phone,'+44 7532 677615');assert.equal(c.receive('Send my brief').submit,true);
 });
@@ -52,7 +52,7 @@ test('success forwards the brief and conversation to the original email service'
  const c=ready(),calls=[];
  const result=await deliverBrief({endpoint:'https://api.web3forms.com/submit',accessKey:'public-test-key',lead:c.lead,messages:c.messages,attribution:{utm_source:'upwork',unrelated:'discard'},fetchImpl:async(url,options)=>{calls.push({url,...options});return {ok:true,json:async()=>({success:true})};}});
  assert.equal(result,true);assert.equal(calls.length,1);const payload=calls[0].body;
- assert.equal(payload.get('email'),'visitor@example.com');assert.equal(payload.get('name'),'Test Visitor');assert.equal(payload.get('phone'),'+44 7532 677615');
+ assert.equal(payload.get('email'),'visitor@example.com');assert.equal(payload.get('name'),'Test Visitor');assert.equal(payload.get('whatsapp'),'+44 7532 677615');
  assert.match(payload.get('conversation'),/Visitor: Connect our Ghost/);assert.equal(payload.get('subject'),'New portfolio chat enquiry');
  assert.equal(payload.get('utm_source'),'upwork');assert.equal(payload.get('unrelated'),null);
 });
@@ -73,10 +73,28 @@ test('the updated page has feedback above contact and only public configuration 
  assert.ok(!html.includes('AggregateRating'));assert.equal((html.match(/class="review-card"/g)||[]).length,2);assert.match(html,/Jawad Ali S\./);assert.match(html,/Saad A\./);
 });
 
-test('email handoff rejects missing phone details before any network request',async()=>{
+test('email handoff requires a WhatsApp number or an explicit skip before sending',async()=>{
  const c=ready();let called=false;await assert.rejects(deliverBrief({endpoint:'https://api.web3forms.com/submit',accessKey:'test',lead:{...c.lead,phone:''},messages:c.messages,fetchImpl:async()=>{called=true;}}),/invalid_brief/);assert.equal(called,false);
 });
 test('pricing matches the four plans and rates explicitly selected by Hanzla',()=>{
  const html=renderPages(resolveContext({}))[0].html;const pricing=html.match(/<section class="pricing-section[\s\S]*?<\/section>/)[0];
  assert.equal((pricing.match(/data-plan-type=/g)||[]).length,4);for(const rate of ['$1,500','$750','$25','$20'])assert.ok(pricing.includes(rate),rate);assert.equal((pricing.match(/data-start-chat/g)||[]).length,5);assert.ok(!pricing.includes('$100'));assert.ok(!pricing.includes('$60'));assert.ok(!answerQuestion('What is the hourly rate?').includes('$100'));assert.ok(!answerQuestion('What is the hourly rate?').includes('$60'));assert.match(pricing,/40 hours per week/);assert.match(pricing,/30 days of support/);assert.match(pricing,/20-minute/);
+});
+
+
+test('visitors can skip WhatsApp or say they do not use it, then send by email',async()=>{
+ for(const decline of ['Skip','Skip WhatsApp',"I don't have WhatsApp",'I do not use WhatsApp','WhatsApp nahi hai','mere pas whatsapp nhi ha','whatapp nhi ha','nahi hai','No thanks']){
+  const c=new Conversation();c.begin('Automation & workflows');c.receive('Connect our Ghost posts to GHL.');c.receive('Test Visitor');c.receive('visitor@example.com');
+  assert.equal(c.stage,'phone');assert.ok(c.stageChoices().includes('Skip WhatsApp'));
+  const review=c.receive(decline);assert.equal(c.stage,'confirm',decline);assert.equal(c.lead.phone,'');assert.equal(c.lead.whatsappSkipped,true);assert.equal(review.review,true);assert.equal(c.receive('Send my brief').submit,true);
+  let payload;await deliverBrief({endpoint:'https://api.web3forms.com/submit',accessKey:'test',lead:c.lead,messages:c.messages,fetchImpl:async(_url,options)=>{payload=options.body;return{ok:true,json:async()=>({success:true})};}});
+  assert.equal(payload.get('whatsapp'),'Not provided (visitor skipped)');assert.equal(payload.get('phone'),null);assert.equal(payload.get('email'),'visitor@example.com');
+  c.reset();assert.equal(c.lead.whatsappSkipped,false);
+ }
+});
+test('WhatsApp questions and invalid numbers do not silently skip the chat field',()=>{
+ const c=ready();c.lead.phone='';c.lead.whatsappSkipped=false;c.next();
+ c.receive('What if I do not know my country code?');assert.equal(c.stage,'phone');assert.equal(c.lead.whatsappSkipped,false);
+ c.receive('123');assert.equal(c.stage,'phone');assert.equal(c.lead.whatsappSkipped,false);
+ const html=renderPages(resolveContext({}))[0].html;assert.match(html,/<input id="cf-whatsapp"[^>]* required/);assert.ok(!html.includes('WhatsApp <span class="optional">'));
 });
