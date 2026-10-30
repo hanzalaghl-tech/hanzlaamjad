@@ -93,9 +93,11 @@ test('AdSense essentials: policy pages, blog articles with BlogPosting data, and
   }
   for(const p of pages)for(const href of ['/privacy/','/terms/','/about/','/contact/','/blog/'])assert.ok(p.html.includes(`href="${href}"`),`${p.path} missing ${href}`);
 });
-test('AdSense code, account tag and ads.txt appear only once a publisher ID is configured',async()=>{
-  const {renderAdsTxt,normalizeAdsenseClient}=await import('../scripts/build.mjs');
-  assert.ok(!pages.some(p=>p.html.includes('adsbygoogle')||p.html.includes('google-adsense-account')));assert.equal(renderAdsTxt(context),'');
+test('AdSense code, account tag and ads.txt follow the configured publisher ID, on production only',async()=>{
+  const {renderAdsTxt,normalizeAdsenseClient}=await import('../scripts/build.mjs');const {default:site}=await import('../site.config.mjs');
+  if(site.adsenseClient)assert.equal(renderAdsTxt(context),`google.com, ${site.adsenseClient.replace(/^ca-/,'')}, DIRECT, f08c47fec0942fa0\n`);
+  else{assert.ok(!pages.some(p=>p.html.includes('adsbygoogle')||p.html.includes('google-adsense-account')));assert.equal(renderAdsTxt(context),'');}
+  assert.ok(!renderPages(resolveContext({SITE_URL:domain,VERCEL_ENV:'preview'})).some(p=>p.html.includes('adsbygoogle')||p.html.includes('google-adsense-account')));
   const withAds=resolveContext({SITE_URL:domain,VERCEL_ENV:'production',ADSENSE_CLIENT:'ca-pub-1234567890123456'});const adPages=renderPages(withAds);
   assert.equal(renderAdsTxt(withAds),'google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n');
   for(const p of adPages.filter(p=>!p.noindex))assert.ok(p.html.includes('<meta name="google-adsense-account" content="ca-pub-1234567890123456">'),p.path);

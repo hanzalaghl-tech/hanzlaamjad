@@ -26,5 +26,5 @@ export default {
   googleSiteVerification: '',
   // Google AdSense publisher ID, for example 'ca-pub-1234567890123456'. Leave empty until AdSense gives you one.
   // When set, every page carries the AdSense account meta tag, blog articles load the ad code and /ads.txt is published.
-  adsenseClient: ''
+  adsenseClient: 'ca-pub-1954259170650579'
 };
