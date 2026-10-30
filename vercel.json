@@ -85,16 +85,6 @@
       "source": "/gohighlevel-expert-pakistan/",
       "destination": "/#about",
       "permanent": true
-    },
-    {
-      "source": "/privacy",
-      "destination": "/#privacy",
-      "permanent": true
-    },
-    {
-      "source": "/privacy/",
-      "destination": "/#privacy",
-      "permanent": true
     }
   ],
   "headers": [

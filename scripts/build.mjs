@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import config from '../site.config.mjs';
 import { page, button } from '../src/layout.mjs';
 import { home } from '../src/home.mjs';
+import { sitePages } from '../src/pages.mjs';
 
 export const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -19,6 +20,17 @@ export function normalizeOrigin(input) {
   return value.origin;
 }
 
+export function normalizeAdsenseClient(input) {
+  if (!input) return '';
+  const value = String(input).trim().replace(/^pub-/, 'ca-pub-');
+  if (!/^ca-pub-\d{10,20}$/.test(value)) throw new Error('adsenseClient must look like ca-pub-1234567890123456.');
+  return value;
+}
+
+export function renderAdsTxt(context) {
+  return context.indexable && context.adsenseClient ? `google.com, ${context.adsenseClient.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n` : '';
+}
+
 export function resolveContext(env = process.env) {
   const requested = env.SITE_URL?.trim() || config.siteUrl.trim() || (env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}` : '');
   const origin = normalizeOrigin(requested);
@@ -28,6 +40,7 @@ export function resolveContext(env = process.env) {
     origin, indexable,
     accessKey: env.WEB3FORMS_ACCESS_KEY?.trim() || config.web3formsKey,
     verification: env.GOOGLE_SITE_VERIFICATION?.trim() || config.googleSiteVerification,
+    adsenseClient: normalizeAdsenseClient(env.ADSENSE_CLIENT?.trim() || config.adsenseClient || ''),
     stylesheet: '/assets/styles.css', script: '/assets/script.js', chatScript:'/assets/chat.js'
   };
 }
@@ -38,14 +51,15 @@ export function renderPages(context) {
     title: 'Hanzla Amjad | GoHighLevel (GHL) Expert & Automation',
     description: 'Hanzla Amjad is a GoHighLevel (GHL) expert for CRM setup, workflow automation, Make integrations, AI booking and sales funnels. See projects and pricing.',
     body: home(context)
-  }];
+  }, ...sitePages(context)];
   pages.push({path:'/404/',file:'404.html',title:'Page not found | Hanzla Amjad',description:'This page is not available. Return to Hanzla Amjad’s portfolio or start a conversation.',noindex:true,body:`<section class="not-found wrap"><p class="eyebrow">404 · A small detour</p><h1>Let’s get you<br><em>back in flow.</em></h1><p>That page isn’t here. The portfolio is a good place to start.</p>${button('Back to the portfolio','/')}</section>`});
   return pages.map(item=>({...item,html:page({...item,context})}));
 }
 
 export function renderSitemap(pages, context) {
   const escapeXml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const urls = context.indexable ? pages.filter(p=>!p.noindex).map(p=>`  <url><loc>${escapeXml(context.origin+p.path)}</loc>${/^\d{4}-\d{2}-\d{2}$/.test(config.contentUpdatedAt||'')?`<lastmod>${config.contentUpdatedAt}</lastmod>`:''}</url>`).join('\n') : '';
+  const lastmod = p => p.modified || config.contentUpdatedAt || '';
+  const urls = context.indexable ? pages.filter(p=>!p.noindex).map(p=>`  <url><loc>${escapeXml(context.origin+p.path)}</loc>${/^\d{4}-\d{2}-\d{2}$/.test(lastmod(p))?`<lastmod>${lastmod(p)}</lastmod>`:''}</url>`).join('\n') : '';
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
@@ -85,6 +99,8 @@ export async function build({env=process.env}={}) {
   // Crawl access allows search engines to see the preview pages' noindex directive.
   const robots=`User-agent: *\nAllow: /\n${context.indexable?`\nSitemap: ${context.origin}/sitemap.xml\n`:''}`;
   await writeFile(path.join(output,'robots.txt'),robots);
+  const adsTxt=renderAdsTxt(context);
+  if(adsTxt) await writeFile(path.join(output,'ads.txt'),adsTxt);
   console.log(`Built ${pages.length} static HTML pages in dist/ with versioned CSS and JavaScript.`);
   console.log(context.indexable?`Production SEO origin: ${context.origin}`:'Preview build: noindex. Production uses SITE_URL or Vercel’s production domain.');
   return {context,pages,output};

@@ -1,7 +1,7 @@
 export default {
   name: 'Hanzla Amjad',
   // Update only when the public content materially changes. Not a deployment timestamp.
-  contentUpdatedAt: '2026-10-19',
+  contentUpdatedAt: '2026-10-30',
   // Other spellings people may search for. Used in structured data only.
   alternateNames: ['Hanzala Amjad'],
   // Your real HTTPS domain, for example 'https://yourdomain.com'.
@@ -23,5 +23,8 @@ export default {
   ],
   // Web3Forms access keys are designed for public, client-side forms.
   web3formsKey: 'b1449c0d-001e-448f-a896-f0457527f4c5',
-  googleSiteVerification: ''
+  googleSiteVerification: '',
+  // Google AdSense publisher ID, for example 'ca-pub-1234567890123456'. Leave empty until AdSense gives you one.
+  // When set, every page carries the AdSense account meta tag, blog articles load the ad code and /ads.txt is published.
+  adsenseClient: ''
 };

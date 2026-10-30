@@ -23,8 +23,8 @@ test('production pages have unique metadata, one h1 and the configured canonical
     const ids=extract(p.html,/\bid="([^"]+)"/g);assert.equal(ids.length,new Set(ids).size,`${p.path}: duplicate id`);
   }
 });
-test('the single landing page describes actual services and all four projects',()=>{
-  assert.equal(pages.filter(p=>!p.noindex).length,1);
+test('the landing page describes actual services and all four projects',()=>{
+  assert.equal(pages[0].path,'/');
   const graph=JSON.parse(extract(pages[0].html,/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)[0])['@graph'];
   assert.ok(graph.some(n=>n['@type']==='Person'));
   assert.equal(graph.filter(n=>n['@type']==='Service').length,5);
@@ -46,7 +46,8 @@ test('every local page link and fragment points to a generated page or element',
 });
 test('sitemap includes only indexable pages and consistently uses the custom domain',()=>{
   const xml=renderSitemap(pages,context);const urls=extract(xml,/<loc>([^<]+)<\/loc>/g);
-  assert.equal(urls.length,1);assert.equal(new Set(urls).size,1);assert.ok(urls.every(u=>u.startsWith(domain+'/')));assert.ok(!urls.some(u=>u.includes('/404/')));
+  const indexable=pages.filter(p=>!p.noindex);
+  assert.equal(urls.length,indexable.length);assert.equal(new Set(urls).size,urls.length);assert.ok(urls.every(u=>u.startsWith(domain+'/')));assert.ok(!urls.some(u=>u.includes('/404/')));
 });
 test('Vercel previews use noindex while canonical URLs still identify production',()=>{
   const preview=resolveContext({SITE_URL:domain,VERCEL_ENV:'preview'});assert.equal(preview.indexable,false);
@@ -76,6 +77,32 @@ test('the home page has no pause control or scroll cue, and its H1 carries the p
   assert.ok(!/motion-toggle|Pause animations|Scroll to explore|scroll-cue/i.test(home.html));
   const h1=home.html.match(/<h1[\s\S]*?<\/h1>/)[0].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
   assert.match(h1,/GoHighLevel/);
+});
+test('AdSense essentials: policy pages, blog articles with BlogPosting data, and footer links on every page',async()=>{
+  const {posts}=await import('../src/posts.mjs');
+  for(const required of ['/about/','/contact/','/privacy/','/terms/','/disclaimer/','/blog/'])assert.ok(pages.some(p=>p.path===required&&!p.noindex),required);
+  const privacy=pages.find(p=>p.path==='/privacy/').html;
+  assert.match(privacy,/adssettings\.google\.com/);assert.match(privacy,/aboutads\.info/);assert.match(privacy,/Third-party vendors, including Google, use cookies/);
+  assert.ok(posts.length>=10);
+  for(const post of posts){
+    const p=pages.find(item=>item.path===`/blog/${post.slug}/`);assert.ok(p,post.slug);
+    assert.match(p.html,/<meta property="og:type" content="article">/);
+    const graph=JSON.parse(extract(p.html,/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)[0])['@graph'];
+    const article=graph.find(n=>n['@type']==='BlogPosting');assert.ok(article);assert.equal(article.headline,post.title);assert.ok(article.wordCount>=650,`${post.slug} has ${article.wordCount} words`);
+    assert.ok(graph.some(n=>n['@type']==='BreadcrumbList'));
+  }
+  for(const p of pages)for(const href of ['/privacy/','/terms/','/about/','/contact/','/blog/'])assert.ok(p.html.includes(`href="${href}"`),`${p.path} missing ${href}`);
+});
+test('AdSense code, account tag and ads.txt appear only once a publisher ID is configured',async()=>{
+  const {renderAdsTxt,normalizeAdsenseClient}=await import('../scripts/build.mjs');
+  assert.ok(!pages.some(p=>p.html.includes('adsbygoogle')||p.html.includes('google-adsense-account')));assert.equal(renderAdsTxt(context),'');
+  const withAds=resolveContext({SITE_URL:domain,VERCEL_ENV:'production',ADSENSE_CLIENT:'ca-pub-1234567890123456'});const adPages=renderPages(withAds);
+  assert.equal(renderAdsTxt(withAds),'google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n');
+  for(const p of adPages.filter(p=>!p.noindex))assert.ok(p.html.includes('<meta name="google-adsense-account" content="ca-pub-1234567890123456">'),p.path);
+  assert.ok(adPages.filter(p=>p.path.startsWith('/blog/')&&p.path!=='/blog/').every(p=>p.html.includes('adsbygoogle.js?client=ca-pub-1234567890123456')));
+  assert.ok(!adPages.find(p=>p.path==='/').html.includes('adsbygoogle.js'));
+  assert.equal(normalizeAdsenseClient('pub-1234567890123456'),'ca-pub-1234567890123456');assert.throws(()=>normalizeAdsenseClient('ca-pub-x"><script>'));
+  assert.equal(renderAdsTxt(resolveContext({SITE_URL:domain,VERCEL_ENV:'preview',ADSENSE_CLIENT:'ca-pub-1234567890123456'})),'');
 });
 test('the HA favicon and touch icon are declared in the head of every page',()=>{
   for(const p of pages){

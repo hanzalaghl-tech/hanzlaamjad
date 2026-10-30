@@ -1,6 +1,8 @@
-# Portfolio SEO — single-page implementation
+# Portfolio SEO
 
-Content reviewed: 19 October 2026. The portfolio intentionally has one indexable landing page. Separate service URLs from the earlier site permanently redirect to relevant sections. Sections and fragments are not separate indexable pages.
+**Update, 30 October 2026:** the site now also has a blog (ten guides written from the portfolio projects), About, Contact, Privacy Policy, Terms and Disclaimer pages, all indexable and in the sitemap. See README → “Blog, standalone pages and AdSense”. The notes below describe the original single-page landing page, which is unchanged.
+
+Content reviewed: 19 October 2026. The portfolio intentionally had one indexable landing page. Separate service URLs from the earlier site permanently redirect to relevant sections. Sections and fragments are not separate indexable pages.
 
 ## Search intent
 
