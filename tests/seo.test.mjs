@@ -128,6 +128,7 @@ test('service schema matches real, linked service content in the server-rendered
   assert.ok(decode(html).includes(service.description));assert.ok(html.includes(`id="${service.id}"`));assert.ok(catalog.itemListElement.some(offer=>offer.itemOffered['@id']===node['@id']));
  }
  const profile=graph.find(n=>Array.isArray(n['@type'])&&n['@type'].includes('ProfilePage'));assert.ok(profile);
+ assert.match(profile.dateModified,/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/,'ProfilePage dateModified must be a full ISO 8601 datetime');
  assert.equal(profile.mainEntity['@id'],graph.find(n=>n['@type']==='Person')['@id']);
  assert.ok(!html.includes('meta name="keywords"'));assert.ok(!graph.some(n=>n['@type']==='FAQPage'||n.aggregateRating));
 });

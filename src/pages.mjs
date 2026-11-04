@@ -1,6 +1,6 @@
 import config from '../site.config.mjs';
 import {posts} from './posts.mjs';
-import {escapeHtml as esc,icon,button,contact} from './layout.mjs';
+import {escapeHtml as esc,icon,button,contact,isoDateTime} from './layout.mjs';
 
 // Standalone pages share the portfolio's type, colours and spacing. Legal copy is dated so changes are visible.
 const policyDate='30 October 2026';
@@ -32,7 +32,7 @@ function articlePage(p,context){
   title:p.seoTitle||`${p.title} | Hanzla Amjad`,description:p.description,body,ogType:'article',ads:true,
   published:p.published,modified:p.modified||p.published,
   ...(p.cover?{image:p.cover.src,imageWidth:p.cover.width,imageHeight:p.cover.height,imageAlt:p.cover.alt}:{}),
-  schema:[{'@type':'BlogPosting','@id':url+'#article',headline:p.title,description:p.description,url,mainEntityOfPage:{'@id':url+'#webpage'},datePublished:p.published,dateModified:p.modified||p.published,author:{'@id':(context.origin||'')+'/#hanzla'},publisher:{'@id':(context.origin||'')+'/#hanzla'},image:p.cover?(context.origin||'')+p.cover.src:(context.origin||'')+'/assets/social-card.png',articleSection:p.category,keywords:p.keywords.join(', '),wordCount:words(p.body),inLanguage:'en'},crumbs(context,items)]
+  schema:[{'@type':'BlogPosting','@id':url+'#article',headline:p.title,description:p.description,url,mainEntityOfPage:{'@id':url+'#webpage'},datePublished:isoDateTime(p.published),dateModified:isoDateTime(p.modified||p.published),author:{'@id':(context.origin||'')+'/#hanzla'},publisher:{'@id':(context.origin||'')+'/#hanzla'},image:p.cover?(context.origin||'')+p.cover.src:(context.origin||'')+'/assets/social-card.png',articleSection:p.category,keywords:p.keywords.join(', '),wordCount:words(p.body),inLanguage:'en'},crumbs(context,items)]
  };
 }
 
