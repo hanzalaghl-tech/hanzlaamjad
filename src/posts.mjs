@@ -568,5 +568,205 @@ ${note('<p><code>{ "event": "appointment_booked", "contact_id": "…", "email": 
 <h2>Testing</h2>
 <p>Test with realistic records, not “test test”: a contact with an accent in their name, a missing phone number, a duplicate email, an international number. These are the records that will arrive in real life, usually on the first day.</p>
 <p>Webhooks are one of the most useful tools in GoHighLevel. Treated carefully, they let GHL connect with almost anything.</p>`
+},
+{
+ slug:'how-to-audit-a-gohighlevel-account',
+ title:'How I audit a GoHighLevel account before changing anything',
+ seoTitle:'How to Audit a GoHighLevel Account: A Practical Checklist | Hanzla Amjad',
+ description:'The order I review an existing GHL sub-account in: lead sources, pipelines, workflows, fields, messaging and integrations, and how I turn that into a fix list.',
+ category:'GoHighLevel setup',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel audit','GHL account review','GHL workflows','pipeline cleanup','CRM audit'],
+ related:['gohighlevel-pipeline-stages-that-work','gohighlevel-custom-values-vs-custom-fields','gohighlevel-snapshots-what-transfers'],
+ cover:{src:'/assets/projects/ghl-ai-02.webp',width:1459,height:888,alt:'A GoHighLevel routing workflow with condition branches',caption:'An audit is mostly reading workflows like this one and asking what each branch is for.'},
+ body:`<p>A lot of projects start with a sentence like “our GHL is a mess, can you fix it?” The tempting answer is to start rebuilding straight away. I don’t. If I change things before I understand them, I can break a follow-up that’s quietly bringing in half the client’s bookings.</p>
+<p>So the first piece of work is an audit: a structured read-through of the account that ends in a written list of what to keep, what to fix and what to remove. Here’s the order I work in and what I look for at each step.</p>
+<h2>1. Start with where leads come from</h2>
+<p>Before opening a single workflow, I list every way a lead can enter the account:</p>
+<ul>
+<li>Forms and surveys, and which funnel or website page each one sits on.</li>
+<li>Calendars people can book directly.</li>
+<li>Facebook and Google lead ads, if they’re connected.</li>
+<li>Inbound calls, SMS and chat widgets.</li>
+<li>Integrations and webhooks from other tools.</li>
+<li>Manual imports.</li>
+</ul>
+<p>For each source I note what should happen next. This becomes the yardstick for everything else. A workflow that doesn’t serve one of these entry points, or a later stage of the journey, is a candidate for removal.</p>
+<h2>2. Read the pipelines like a salesperson would</h2>
+<p>Next I open each pipeline and ask: if I were on the sales team, would I know what to do with a card in each stage? Common problems:</p>
+<ul>
+<li><strong>Too many stages</strong>, some of which nobody uses. A stage with zero opportunities for three months is usually dead.</li>
+<li><strong>Stages that describe activity, not progress.</strong> “Called once”, “Called twice” and “Called three times” belong in tasks or tags, not in the pipeline.</li>
+<li><strong>Several pipelines doing the same job</strong>, often left over from old campaigns.</li>
+<li><strong>Opportunities that never move</strong>, because nothing in the workflows updates them.</li>
+</ul>
+<p>I wrote more about this in <a href="/blog/gohighlevel-pipeline-stages-that-work/">how I design pipeline stages</a>.</p>
+<h2>3. Map every published workflow</h2>
+<p>This is the longest step. For every published workflow I write down four things: its trigger, its filters, what it does, and whether anything else depends on it. A simple table is enough.</p>
+<p>What I’m looking for:</p>
+<ul>
+<li><strong>Duplicates.</strong> Two workflows triggered by the same form, both sending a welcome SMS. The contact gets two texts and the client wonders why replies dropped.</li>
+<li><strong>Conflicts.</strong> One workflow moves an opportunity to “Booked” while another moves it back to “New lead”.</li>
+<li><strong>Dead ends.</strong> Workflows that add a tag nothing else uses.</li>
+<li><strong>Missing exits.</strong> Nurture sequences that keep messaging people after they’ve booked or bought.</li>
+<li><strong>Drafts that should be live</strong>, and live workflows that were only meant for testing.</li>
+</ul>
+<p>The workflow list sorted by name tells you a lot. If names are random (“Copy of Copy of New Workflow”), the account has grown without a plan, and naming is one of the first things I’ll fix.</p>
+<h2>4. Check custom fields, values and tags</h2>
+<p>I export or screenshot the field list and look for duplicates like “Budget”, “budget” and “Budget 2”. I check which ones forms actually write to and which ones workflows read from. Unused fields aren’t harmful on their own, but duplicates are: one form writes to the first field, a workflow reads from the second, and the data never meets.</p>
+<p>I also check that business details such as phone numbers and booking links live in Custom Values rather than being typed into dozens of templates. If you’re unsure of the difference, see <a href="/blog/gohighlevel-custom-values-vs-custom-fields/">Custom Values vs custom fields</a>.</p>
+<h2>5. Messaging foundations</h2>
+<p>Workflows only matter if their messages arrive. I check:</p>
+<ul>
+<li>Which phone numbers are in use and whether A2P registration is approved for US texting.</li>
+<li>Whether email is sent from a properly set-up sending domain, not a shared default.</li>
+<li>Whether DND and opt-out handling works, so people who reply STOP stop getting messages.</li>
+<li>Missed call, reminder and no-show workflows, which are often the most valuable and the most neglected.</li>
+</ul>
+<p>Problems here explain a lot of “the automation isn’t working” complaints. The automation is fine; the message is being filtered.</p>
+<h2>6. Integrations and connected accounts</h2>
+<p>Finally, I list every connected service: Google, Facebook, Stripe, Zapier or Make scenarios, webhooks and anything using the API. For each one I check that it still works, who owns the login, and what breaks if it disconnects. An integration connected through a former employee’s account is a problem waiting to happen.</p>
+<h2>7. Test the main journeys</h2>
+<p>With the map in hand, I submit test leads through the main entry points and follow them. Did the contact get created once? Did the right tags and fields fill in? Did the opportunity appear in the right stage? Did the messages arrive, in the right order, from the right number? This catches what reading alone misses.</p>
+<h2>What the client gets</h2>
+<p>The output is a short document in plain language, grouped into three lists:</p>
+<ol>
+<li><strong>Fix now</strong>: anything losing leads or messaging people incorrectly.</li>
+<li><strong>Improve</strong>: clean-up that makes the account easier to run, like naming and duplicate fields.</li>
+<li><strong>Consider</strong>: new automations or integrations that would help, with a rough scope.</li>
+</ol>
+<p>Sometimes the conclusion is that a rebuild is the right call. More often, a dozen targeted fixes get the account working properly, and the client keeps everything that was already doing its job.</p>
+<h2>Doing a quick version yourself</h2>
+<p>If you only have an hour, do steps 1, 3 and 7: list your lead sources, check your published workflows for duplicates and missing exits, and push one test lead through your main form. You’ll find most of the serious problems that way.</p>`
+},
+{
+ slug:'gohighlevel-pipeline-stages-that-work',
+ title:'Designing GoHighLevel pipeline stages your team will actually use',
+ seoTitle:'GoHighLevel Pipeline Stages: How to Design Them Well | Hanzla Amjad',
+ description:'How I plan GHL pipelines: stages that show progress, clear entry and exit rules, automation that moves opportunities, and when to use a second pipeline.',
+ category:'GoHighLevel setup',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel pipeline','GHL opportunities','pipeline stages','CRM setup','sales pipeline'],
+ related:['how-to-audit-a-gohighlevel-account','gohighlevel-ai-booking-agent-workflow','gohighlevel-snapshots-what-transfers'],
+ cover:{src:'/assets/projects/ghl-ai-06.webp',width:866,height:894,alt:'A GoHighLevel workflow reacting to an appointment status change',caption:'Workflows like this one keep opportunities in the right stage without anyone dragging cards.'},
+ body:`<p>A pipeline is the part of GoHighLevel that a sales team looks at every day. If it’s designed well, anyone can open it and see where every deal stands. If it isn’t, people stop trusting it, keep their own spreadsheet and the CRM slowly becomes a contact list.</p>
+<p>These are the rules I follow when I set one up for a client.</p>
+<h2>Stages describe progress, not activity</h2>
+<p>A stage should answer “how close is this person to buying?” not “what did we last do?” Compare:</p>
+<ul>
+<li><strong>Activity stages:</strong> Called, Texted, Emailed, Called again.</li>
+<li><strong>Progress stages:</strong> New lead, Contacted, Appointment booked, Showed, Proposal sent, Won, Lost.</li>
+</ul>
+<p>Calls and messages are already in the conversation history. Tasks can remind someone to follow up. The pipeline should show movement towards a decision.</p>
+<h2>Fewer stages than you think</h2>
+<p>Most service businesses I work with need between five and eight stages. Every extra stage is another place for a card to get stuck and another decision someone has to make. If two stages always contain the same people, merge them.</p>
+<p>A simple test: for each stage, can you say in one sentence what has to be true for an opportunity to be there? If you can’t, the stage isn’t clear enough.</p>
+<h2>Write entry and exit rules</h2>
+<p>For each stage I agree with the client:</p>
+<ul>
+<li><strong>How a card gets in.</strong> For example, “Appointment booked” is entered when a calendar booking is confirmed.</li>
+<li><strong>How it gets out.</strong> It moves to “Showed” when the appointment is marked showed, or to “No-show” if it isn’t.</li>
+<li><strong>Who owns it</strong> while it’s there.</li>
+<li><strong>How long is too long.</strong> A card sitting in “Proposal sent” for 14 days probably needs a nudge.</li>
+</ul>
+<p>Writing this down takes half an hour and saves weeks of arguments about why the numbers don’t add up.</p>
+<h2>Let workflows move the cards</h2>
+<p>People forget to drag cards. Workflows don’t. Wherever an event in GHL tells you the stage has changed, automate the move:</p>
+<ul>
+<li>Form submitted: create the opportunity in “New lead”.</li>
+<li>First reply received: move to “Contacted”.</li>
+<li>Appointment booked: move to “Appointment booked”.</li>
+<li>Appointment status changes to showed or no-show: move accordingly.</li>
+<li>Invoice paid: move to “Won”.</li>
+</ul>
+<p>In the <a href="/blog/gohighlevel-ai-booking-agent-workflow/">AI booking setup</a>, appointment-status triggers do exactly this, and they also pull the contact out of any nurture sequence once they’ve booked. Keep manual moves for the judgement calls, like deciding a deal is lost.</p>
+<h2>Make “Lost” useful</h2>
+<p>A lost deal is information. I add a required lost reason, either as the opportunity’s lost reason or a dropdown custom field: price, timing, chose a competitor, no response, not a fit. After a few months the client can see why deals don’t close, which is far more useful than a growing pile of grey cards.</p>
+<p>Lost doesn’t have to mean forgotten. A reactivation workflow can reach out to “timing” losses after a few months.</p>
+<h2>One pipeline or several?</h2>
+<p>Use a second pipeline when the journey is genuinely different, not just the product. Common examples:</p>
+<ul>
+<li>Sales and onboarding. Once a deal is won, a new opportunity starts in an onboarding pipeline with its own stages.</li>
+<li>Different services with different steps, like a quick consultation versus a long project with a proposal.</li>
+<li>Recruitment or partner enquiries that shouldn’t clutter sales.</li>
+</ul>
+<p>If two pipelines have the same stages, they should probably be one pipeline with a tag or a source field to tell them apart.</p>
+<h2>Use opportunity values</h2>
+<p>Even a rough value on each opportunity turns the pipeline into a forecast. Set a default value per service if exact amounts aren’t known yet, and update it when a proposal goes out. GHL’s reporting can then show the value sitting in each stage, which tells a business owner much more than a count of cards.</p>
+<h2>Build it with the people who use it</h2>
+<p>I sketch the stages and rules, then walk the team through them before building anything. They know which steps really happen and which only exist on paper. A pipeline that matches how people already work gets used. One that matches a template from the internet usually doesn’t.</p>
+<h2>A starting point</h2>
+<p>If you need somewhere to begin, this works for many appointment-based businesses:</p>
+<ol>
+<li>New lead</li>
+<li>Contacted</li>
+<li>Appointment booked</li>
+<li>Showed</li>
+<li>Proposal or quote sent</li>
+<li>Won</li>
+<li>Lost (with reason)</li>
+</ol>
+<p>Add a “No-show” stage if no-shows are common and need their own follow-up. Then adjust it to your process, not the other way round.</p>`
+},
+{
+ slug:'gohighlevel-email-sending-domain-setup',
+ title:'Setting up a dedicated email sending domain in GoHighLevel',
+ seoTitle:'GoHighLevel Email Sending Domain Setup (Mailgun & DNS) | Hanzla Amjad',
+ description:'Why a dedicated sending subdomain matters for GHL email deliverability, the DNS records involved, how I verify them, and what to warm up and monitor after.',
+ category:'Email & deliverability',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel email','sending domain','Mailgun','SPF DKIM DMARC','email deliverability'],
+ related:['a2p-10dlc-registration-gohighlevel-approval','how-to-audit-a-gohighlevel-account','gohighlevel-snapshots-what-transfers'],
+ cover:null,
+ body:`<p>Email domain setup was a regular part of my account setup work at Wingman and Top Lion Marketing. It’s one of those tasks nobody notices when it’s done right. When it’s skipped, emails land in spam, open rates look terrible and everyone blames the copy.</p>
+<p>This guide covers why a dedicated sending domain matters in GoHighLevel, the DNS records involved and the checks I do afterwards.</p>
+${note('<p>GoHighLevel offers its own email service and also supports Mailgun. The screens and options change over time, so follow the current setup wizard in your account. The principles below apply either way.</p>')}
+<h2>Why not just use the default?</h2>
+<p>Out of the box, a new sub-account can send email on shared settings. That’s fine for testing. For real campaigns it means your reputation is mixed with other senders, and recipients’ mail servers can’t confirm that you’re allowed to send for your own domain.</p>
+<p>A dedicated sending domain fixes that. Mail servers can check that the email really comes from you, and your sending reputation builds up on your own domain over time.</p>
+<h2>Use a subdomain</h2>
+<p>I always use a subdomain for sending, something like <code>mail.yourbusiness.com</code> or <code>mg.yourbusiness.com</code>, rather than the main domain. Two reasons:</p>
+<ul>
+<li><strong>It protects your main domain.</strong> If a marketing campaign gets complaints, the impact is mostly limited to the subdomain, not the domain you use for everyday email.</li>
+<li><strong>It avoids DNS clashes.</strong> Your main domain already has records for Google Workspace or Microsoft 365. A subdomain keeps the sending records separate.</li>
+</ul>
+<p>The visible “from” address can still be <code>you@yourbusiness.com</code>. The subdomain works behind the scenes.</p>
+<h2>The DNS records</h2>
+<p>The setup screen gives you a set of records to add at your DNS provider, such as Cloudflare, GoDaddy or Namecheap. They usually include:</p>
+<ul>
+<li><strong>SPF</strong> (a TXT record): lists which servers may send email for the subdomain.</li>
+<li><strong>DKIM</strong> (a TXT or CNAME record): a public key that lets receivers check each email’s signature.</li>
+<li><strong>MX records</strong>: so replies and bounces for the sending subdomain can be handled.</li>
+<li><strong>Tracking CNAME</strong>: used for open and click tracking links.</li>
+</ul>
+<p>Copy each value exactly. The most common mistakes I fix are small ones:</p>
+<ul>
+<li>Adding the full domain in the “name” field when the DNS provider adds it automatically, which creates <code>mg.yourbusiness.com.yourbusiness.com</code>.</li>
+<li>Creating a second SPF record instead of editing the existing one. A domain should have only one SPF record.</li>
+<li>Leaving Cloudflare’s proxy (the orange cloud) on for a CNAME that needs to be DNS-only.</li>
+<li>Missing a character when copying a long DKIM key.</li>
+</ul>
+<h2>Add DMARC on the main domain</h2>
+<p>DMARC tells receiving servers what to do with email that fails checks. Major mailbox providers now expect bulk senders to have one. If the domain doesn’t have a DMARC record, I add a cautious one to start with, a TXT record at <code>_dmarc.yourbusiness.com</code> with a policy of <code>p=none</code> and a reporting address. Once the reports show that legitimate email passes, the policy can be tightened.</p>
+<h2>Verify, then check properly</h2>
+<p>DNS changes can take anything from minutes to a day or two to spread. Once the setup screen shows the records as verified, I do a real check:</p>
+<ol>
+<li>Send a test email from a GHL workflow to a Gmail address and an Outlook address.</li>
+<li>In Gmail, open “Show original” and check that SPF, DKIM and DMARC all say PASS.</li>
+<li>Check that links are using the tracking subdomain and work.</li>
+<li>Reply to the email and make sure the reply reaches the right inbox.</li>
+</ol>
+<p>If DKIM fails, it’s almost always a copy mistake in the key. If SPF fails, check for duplicate SPF records.</p>
+<h2>Warm it up</h2>
+<p>A brand-new sending domain has no reputation. Sending 10,000 emails from it on day one looks like spam behaviour. I start with the most engaged contacts, people who opted in recently or have opened before, and increase volume gradually over a few weeks.</p>
+<h2>Keep lists clean</h2>
+<p>Good DNS gets you in the door. List quality keeps you there:</p>
+<ul>
+<li>Only email people who opted in.</li>
+<li>Remove hard bounces straight away; GHL marks them, so exclude them in your filters.</li>
+<li>Stop emailing people who haven’t opened in months, or run a short re-engagement sequence first.</li>
+<li>Always include a working unsubscribe link and honour it.</li>
+</ul>
+<h2>What to watch afterwards</h2>
+<p>Keep an eye on bounce rates, spam complaints and opens in GHL’s email reporting. A sudden jump in bounces usually means a bad list was imported. A drop in opens across the board can mean you’re landing in spam. Google’s Postmaster Tools can also show your domain’s reputation with Gmail once you send enough volume.</p>
+<h2>Same idea as SMS</h2>
+<p>Email domain setup is the email version of <a href="/blog/a2p-10dlc-registration-gohighlevel-approval/">A2P registration for SMS</a>: identity first, then permission, then sensible volume. Get those right, and your automations actually reach people.</p>`
 }
 ];
