@@ -85,6 +85,56 @@
       "source": "/gohighlevel-expert-pakistan/",
       "destination": "/#about",
       "permanent": true
+    },
+    {
+      "source": "/blog/ai-voice-receptionist-retell-n8n-cal-com",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ai-voice-receptionist-retell-n8n-cal-com/",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/whatsapp-ai-booking-agent-n8n-twilio",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/whatsapp-ai-booking-agent-n8n-twilio/",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/multi-agent-sms-booking-system-n8n",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/multi-agent-sms-booking-system-n8n/",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/medspa-ai-lead-scoring-gohighlevel-n8n",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/medspa-ai-lead-scoring-gohighlevel-n8n/",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ai-sms-sales-assistant-human-handoff-gohighlevel",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ai-sms-sales-assistant-human-handoff-gohighlevel/",
+      "destination": "/blog/",
+      "permanent": true
     }
   ],
   "headers": [

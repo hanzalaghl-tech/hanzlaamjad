@@ -770,265 +770,6 @@ ${note('<p>GoHighLevel offers its own email service and also supports Mailgun. T
 <p>Email domain setup is the email version of <a href="/blog/a2p-10dlc-registration-gohighlevel-approval/">A2P registration for SMS</a>: identity first, then permission, then sensible volume. Get those right, and your automations actually reach people.</p>`
 },
 {
- slug:'ai-voice-receptionist-retell-n8n-cal-com',
- title:'Building an AI voice receptionist with Retell AI, n8n and Cal.com',
- seoTitle:'AI Voice Receptionist with Retell AI, n8n & Cal.com | Hanzla Amjad',
- description:'How I built a phone receptionist that checks live availability, books, reschedules and cancels appointments mid-call, then confirms on WhatsApp and email.',
- category:'Voice AI',published:'2026-11-11',modified:'2026-11-11',
- keywords:['AI voice receptionist','Retell AI','n8n','Cal.com','appointment booking','Twilio WhatsApp'],
- related:['retell-ai-gohighlevel-outbound-calls-make','whatsapp-ai-booking-agent-n8n-twilio','medspa-ai-lead-scoring-gohighlevel-n8n'],
- cover:{src:'/assets/projects/blog/voice-receptionist-flow.webp',width:1580,height:490,alt:'n8n workflow receiving Retell function calls and booking through Cal.com',caption:'The first version: one webhook that checks availability or books, then confirms on WhatsApp.'},
- body:`<p>A voice receptionist only feels useful if it can actually do things while the caller is on the line. Answering questions is easy. Checking the real calendar, booking a slot and confirming it before the caller hangs up is the part that takes some thought.</p>
-<p>I’ve built this twice. The first version booked discovery calls. The second handled the whole appointment lifecycle: checking the day’s schedule, booking, rescheduling, cancelling and finding an existing booking. Both use the same idea: Retell AI runs the conversation, and n8n does everything the agent needs to look up or change.</p>
-<h2>How the pieces fit</h2>
-<ul>
-<li><strong>Retell AI</strong> hosts the voice agent: the prompt, the voice and the functions it may call.</li>
-<li><strong>n8n</strong> receives every function call on one webhook and decides what to do.</li>
-<li><strong>Cal.com</strong> holds the real availability and the bookings.</li>
-<li><strong>Google Sheets</strong> logs every lead and booking.</li>
-<li><strong>Twilio</strong> sends the WhatsApp confirmation, and Gmail sends an email copy.</li>
-</ul>
-<p>The important rule: the agent never invents a time. It only offers slots that came back from Cal.com, so it can’t promise something that’s already taken.</p>
-<h2>The call script</h2>
-<p>The first agent ran on GPT-4.1 mini in Retell with an English (US) voice. Retell showed roughly 820 to 1,000 ms of latency for that setup, which sounds natural on a phone call. The script was short:</p>
-<ol>
-<li><strong>Greet</strong> and introduce itself as the AI receptionist.</li>
-<li><strong>Collect</strong> name, email (spelled back to confirm), phone and what the caller is interested in.</li>
-<li><strong>Check</strong> availability and read back two or three open slots.</li>
-<li><strong>Book</strong> the one the caller picks and confirm it.</li>
-</ol>
-<p>The rules mattered as much as the steps: one or two sentences per reply, casual spoken style, never invent availability, send pricing questions to the discovery call, and ask again rather than guess when something is unclear. Spelling the email back is worth the extra few seconds. A wrong email means the confirmation never arrives.</p>
-<h2>One webhook, many functions</h2>
-${fig('/assets/projects/blog/voice-receptionist-backend.webp',1600,817,'n8n backend with a Switch routing seven Retell functions to separate branches','The full-lifecycle backend: a Switch sends each function to its own branch, and every branch answers Retell.')}
-<p>Every function in Retell posts to the same n8n webhook. A code step reads which function was called, and a Switch sends it down its own branch. The second version had seven:</p>
-<ul>
-<li><code>check_today_schedule</code>: reads today’s schedule and formats it for the agent.</li>
-<li><code>check_availability</code>: gets open slots from Cal.com.</li>
-<li><code>book_appointment</code>: creates the booking, logs it, sends WhatsApp and email.</li>
-<li><code>save_lead_info</code>: saves the caller’s details even if they don’t book.</li>
-<li><code>cancel_appointment</code>: cancels and sends a WhatsApp cancellation.</li>
-<li><code>reschedule_appointment</code>: cancels the old booking, creates the new one, sends an update.</li>
-<li><code>find_booking</code>: looks up an existing booking.</li>
-</ul>
-<p>Every branch ends with a Respond to Webhook node. That’s what lets the agent say “you’re booked for Tuesday at 3” while the caller is still listening. In the execution log, a full booking run took under ten seconds; simple lookups took two or three.</p>
-<h2>Reschedule safely</h2>
-<p>Rescheduling cancels the old booking before it creates the new one. If you create first and cancel second, a failure halfway leaves two bookings for the same person. Cancelling first means the worst case is that the caller hears “I couldn’t book the new time”, which the agent can handle.</p>
-<h2>What the caller receives</h2>
-<p>Right after the call, the caller gets a WhatsApp message: the confirmed date, time, duration and meeting link, or a cancellation with the booking ID. New bookings also get an email. Having it in writing reduces no-shows and saves the business from “what time did I book?” calls.</p>
-<h2>Lessons from the handover</h2>
-<ul>
-<li><strong>Pin the year carefully.</strong> The prompt told the model which year to use for dates. That needs updating every January, or bookings get requested for the wrong year.</li>
-<li><strong>Function names must match exactly.</strong> If Retell sends <code>book_appointment</code> and n8n checks for <code>bookAppointment</code>, nothing happens and the agent stalls.</li>
-<li><strong>Every branch needs a response.</strong> In one branch the response step was missing, so the agent never heard the result. It’s an easy miss; test every function, not just booking.</li>
-<li><strong>Keep confirmations consistent.</strong> New bookings sent WhatsApp and email, but cancellations only sent WhatsApp. Decide once and apply it to every branch.</li>
-<li><strong>Map IDs for tracing.</strong> Store the call ID and booking ID in the sheet, so any booking can be traced back to its call recording.</li>
-<li><strong>WhatsApp needs an approved sender.</strong> Twilio’s sandbox is fine for testing, but a live business needs an approved WhatsApp sender and templates.</li>
-</ul>
-<h2>Where GoHighLevel fits</h2>
-<p>This build used Cal.com and Sheets because that’s what the business used. The same pattern works with GoHighLevel: swap Cal.com for the GHL calendar API and Sheets for contacts and opportunities. I covered the outbound version, where the AI calls new GHL leads, in <a href="/blog/retell-ai-gohighlevel-outbound-calls-make/">connecting Retell AI calls to GoHighLevel</a>.</p>`
-},
-{
- slug:'whatsapp-ai-booking-agent-n8n-twilio',
- title:'A WhatsApp AI booking agent with memory, built in n8n',
- seoTitle:'WhatsApp AI Booking Agent with n8n, Twilio & Groq | Hanzla Amjad',
- description:'How a single n8n flow lets customers book by WhatsApp chat: conversation memory in Google Sheets, pricing in the prompt and a booking reference at the end.',
- category:'AI chat agents',published:'2026-11-11',modified:'2026-11-11',
- keywords:['WhatsApp AI agent','n8n','Twilio WhatsApp','Groq','chatbot booking','conversation memory'],
- related:['multi-agent-sms-booking-system-n8n','ai-voice-receptionist-retell-n8n-cal-com','ai-sms-sales-assistant-human-handoff-gohighlevel'],
- cover:{src:'/assets/projects/blog/whatsapp-booking-agent.webp',width:1600,height:548,alt:'n8n workflow for a WhatsApp booking agent with Twilio, Google Sheets and a Groq chat model',caption:'The whole agent in one n8n flow, with each message handled in a few seconds.'},
- body:`<p>For a pet grooming business, most bookings start with a message like “do you have time for a full groom this Saturday?” This project let customers book entirely by WhatsApp chat. The agent remembers the dog, quotes the right price and confirms with a booking reference.</p>
-<h2>The flow, step by step</h2>
-<p>Twilio calls an n8n webhook for every incoming WhatsApp message. From there:</p>
-<ol>
-<li><strong>Parse the message</strong>: who sent it and what they said.</li>
-<li><strong>Load the conversation history</strong> for that phone number from Google Sheets.</li>
-<li><strong>Build the prompt</strong>: history, the new message, the service menu, prices and opening hours.</li>
-<li><strong>Ask the model</strong> (a Groq-hosted chat model in a Basic LLM Chain) for the next reply and the customer’s intent.</li>
-<li><strong>Check if it’s ready to book</strong>: are the service, day and time all known? If so, create a booking reference.</li>
-<li><strong>Send the reply</strong> through the Twilio API.</li>
-<li><strong>Log the exchange</strong> to Google Sheets and close the webhook.</li>
-</ol>
-<p>In the execution log, each message took between about 2.5 and 5.6 seconds end to end. On WhatsApp that feels like a person typing quickly.</p>
-<h2>Memory without a database</h2>
-<p>The agent needs to remember that “Max” is a German Shepherd and that the customer asked for a full groom three messages ago. Rather than run a separate database, the same Google Sheet that logs every message is read back on the next one. Each row stores the timestamp, phone, name, message, detected intent and AI reply, plus booking status and confirmation number.</p>
-<p>It’s simple, cheap and easy for the business to inspect. The trade-off is that the sheet grows with every message, so the history step should only read the last few exchanges for that number. Otherwise replies slow down over time.</p>
-<h2>Pricing the model can’t get wrong</h2>
-<p>The price list lives in the prompt: full groom for small, medium and large dogs, bath and brush, nail trims and add-ons. When a customer mentions a breed, the agent places the dog in a size and quotes from the list. In testing, a German Shepherd was correctly placed in “large” and quoted the large-dog price, with the opening hours and the shop address in the confirmation.</p>
-<p>Keeping prices in one place, the Build Prompt step, means updating the menu is a single edit. The downside is that someone has to remember to make it.</p>
-<h2>What I’d change before going fully live</h2>
-<p>The handover listed a few things honestly, and they’re useful for anyone building something similar:</p>
-<ul>
-<li><strong>Convert relative dates.</strong> The agent confirmed “this Saturday”. Staff need a real date, so the booking step should turn relative days into calendar dates before saving.</li>
-<li><strong>Connect a real calendar.</strong> The booking reference was generated, but not written to a calendar. Without that, two customers could get the same slot. A calendar or booking tool should be the source of truth for availability.</li>
-<li><strong>Limit history.</strong> Read only recent messages for each number.</li>
-<li><strong>Use an approved sender.</strong> Twilio’s WhatsApp sandbox only talks to numbers that joined it. A real business needs an approved WhatsApp sender.</li>
-</ul>
-<h2>Writing the prompt for a chat agent</h2>
-<p>A WhatsApp conversation is short and informal, so the instructions say so: short replies, one question at a time, no long menus pasted into a chat bubble. The prompt also tells the model exactly when a booking is complete (service, day and time all known) so it doesn’t confirm too early. And it returns an intent alongside the reply, which is what the “ready to book?” check reads. Asking the model for a reply and a label in one response keeps the flow to a single call per message.</p>
-<h2>When a single flow is enough</h2>
-<p>For a small business with one main job, booking, a single flow with one model is easier to build and maintain than a multi-agent system. When conversations get more varied, with questions, complaints, rescheduling and escalation, splitting the work between specialised agents starts to pay off. I did exactly that for SMS in <a href="/blog/multi-agent-sms-booking-system-n8n/">a multi-agent booking system</a>.</p>
-<h2>Bringing it into GoHighLevel</h2>
-<p>If the business runs on GoHighLevel, the same flow can read and write GHL conversations and contacts through the API instead of Sheets, and book into a GHL calendar. The logic stays the same: load context, generate a reply, check if there’s enough to book, then act.</p>`
-},
-{
- slug:'multi-agent-sms-booking-system-n8n',
- title:'Four AI agents, one SMS inbox: a multi-agent booking system in n8n',
- seoTitle:'Multi-Agent SMS Booking System with n8n & OpenAI | Hanzla Amjad',
- description:'How I split SMS handling between four AI agents with structured outputs: intent routing, booking against a real calendar, customer care and one voice for every reply.',
- category:'AI chat agents',published:'2026-11-11',modified:'2026-11-11',
- keywords:['multi-agent AI','n8n AI agents','SMS booking','OpenAI structured output','Twilio SMS','Google Calendar'],
- related:['whatsapp-ai-booking-agent-n8n-twilio','ai-sms-sales-assistant-human-handoff-gohighlevel','ai-voice-receptionist-retell-n8n-cal-com'],
- cover:{src:'/assets/projects/blog/multi-agent-sms.webp',width:1600,height:417,alt:'n8n workflow with four AI agents, a switch, calendar checks and Twilio SMS',caption:'The full workflow: intake and routing on the left, the booking branch at the top, every path meeting at the final agent.'},
- body:`<p>One big prompt that handles everything (bookings, questions, complaints, small talk) gets long, slow and unpredictable. For a pet grooming business’s SMS line, I split the work between four AI agents in one n8n workflow. Each has one job and returns structured data, not free text.</p>
-<h2>The four agents</h2>
-<ul>
-<li><strong>Agent 1, Conversation:</strong> reads the new text with the customer’s history and decides what they need.</li>
-<li><strong>Agent 2, Booking specialist:</strong> works out the service and preferred time, using the price list and booking data.</li>
-<li><strong>Agent 3, Customer care:</strong> answers questions that aren’t bookings.</li>
-<li><strong>Agent 4, Master SMS coordinator:</strong> writes the final text the customer receives, whichever path the message took.</li>
-</ul>
-<p>Every agent has its own output parser. That’s the detail that makes this reliable: the next step always gets clean fields like <code>intent</code>, <code>service</code> or <code>preferred_time</code>, never a paragraph it has to interpret.</p>
-<h2>Stage 1: intake and routing</h2>
-<p>Twilio posts each incoming SMS to a webhook. The workflow extracts the number and text, logs the message, loads that customer’s conversation context from Google Sheets, and hands everything to Agent 1. After Agent 1, the customer record is updated with anything new it learned, and a Switch routes the message down one of four paths:</p>
-<ul>
-<li><strong>Booking</strong>: to Agent 2 and the calendar check.</li>
-<li><strong>Customer question</strong>: to Agent 3.</li>
-<li><strong>Simple reply</strong>: a direct response, no extra agent needed.</li>
-<li><strong>Needs a person</strong>: an escalation.</li>
-</ul>
-<h2>Stage 2: booking against the real calendar</h2>
-<p>The booking branch loads the price list, checks there’s enough information, and asks Agent 2 to work out what the customer wants. When it’s time to look for slots, the workflow checks Google Calendar availability, finds open times, aggregates them and picks the best three to offer. The customer is also created or updated in HubSpot.</p>
-<p>The model never decides which times are free. The calendar does. The agent’s job is understanding the request; the calendar’s job is the truth about availability. Mixing those two is how bots end up double-booking.</p>
-<h2>Stage 3: one voice for every reply</h2>
-<p>All four paths meet at Agent 4. It takes whatever the upstream step produced (three slots, an answer, an escalation note) and writes the SMS. Because one agent writes every message, the tone is the same whether the booking agent or the customer-care agent did the work. The text goes out through Twilio, is logged, and the conversation state is updated so the next message picks up where this one ended.</p>
-<h2>Why split it up?</h2>
-<ul>
-<li><strong>Shorter prompts</strong> are easier to test and change without side effects.</li>
-<li><strong>Structured outputs</strong> make every hand-off predictable.</li>
-<li><strong>Different models per job</strong> become possible: a cheaper model for routing, a stronger one for writing.</li>
-<li><strong>Debugging is easier.</strong> If a reply is wrong, the execution log shows which agent produced the wrong data.</li>
-</ul>
-<h2>What still needed doing at handover</h2>
-<p>I listed these openly, and they’re the gaps anyone copying the pattern should check:</p>
-<ul>
-<li><strong>Create the event.</strong> The booking path found and offered slots, but no step created the calendar event after the customer picked one. Without it, bookings never reach the calendar.</li>
-<li><strong>Decide who handles escalations.</strong> The escalation path prepared a message but didn’t notify anyone yet.</li>
-<li><strong>Keep parsers in sync.</strong> If a prompt changes the fields an agent returns, its output parser and the parse step after it must change too.</li>
-<li><strong>Don’t rearrange the sheet.</strong> Conversation state lived in Google Sheets, so the column structure has to stay fixed.</li>
-<li><strong>Check CRM credentials</strong> before going live.</li>
-</ul>
-<h2>Testing a multi-agent flow</h2>
-<p>I test each path separately before testing the whole thing. A set of sample texts covers every route: a clear booking request, a vague one (“sometime next week?”), a price question, a complaint and an opt-out. For each, the execution log shows what Agent 1 decided and what each later agent returned. If the routing is wrong, the fix is in Agent 1’s prompt; if the slots are wrong, it’s the calendar step; if the tone is off, it’s Agent 4. Splitting the work makes problems easy to locate.</p>
-<h2>When to use this pattern</h2>
-<p>For a single, focused job, a <a href="/blog/whatsapp-ai-booking-agent-n8n-twilio/">single-agent flow</a> is simpler. Once messages vary a lot and some need a human, a multi-agent design keeps each part manageable. The same structure works with GoHighLevel as the CRM and calendar; only the integration nodes change.</p>`
-},
-{
- slug:'medspa-ai-lead-scoring-gohighlevel-n8n',
- title:'AI lead scoring for a med spa: GoHighLevel, n8n, OpenAI and Retell',
- seoTitle:'AI Lead Scoring in GoHighLevel with n8n & OpenAI | Hanzla Amjad',
- description:'A med spa system where every new GHL lead is scored HOT, WARM or COLD by OpenAI in n8n, HOT leads get an instant AI call, and six workflows run the client journey.',
- category:'GoHighLevel + AI',published:'2026-11-11',modified:'2026-11-11',
- keywords:['AI lead scoring','GoHighLevel','n8n','OpenAI','Retell AI','med spa marketing'],
- related:['retell-ai-gohighlevel-outbound-calls-make','gohighlevel-pipeline-stages-that-work','gohighlevel-ai-booking-agent-workflow'],
- cover:{src:'/assets/projects/blog/medspa-lead-scoring.webp',width:1600,height:353,alt:'n8n flow that scores a GoHighLevel lead with OpenAI and triggers a Retell call for hot leads',caption:'The scoring engine: GHL sends the lead, OpenAI scores it, HOT leads get a call.'},
- body:`<p>Not every lead deserves the same effort at the same moment. Someone who filled in a consultation form asking about a specific treatment this week is very different from someone browsing prices. This system for a med spa scores every new lead with AI the moment it arrives, calls the hottest ones straight away, and lets GoHighLevel handle the rest of the journey.</p>
-<h2>Who does what</h2>
-<ul>
-<li><strong>GoHighLevel</strong> captures the lead, holds the pipeline and runs the client-facing follow-up.</li>
-<li><strong>n8n</strong> sits in the middle and does the AI work.</li>
-<li><strong>OpenAI</strong> scores each lead HOT, WARM or COLD.</li>
-<li><strong>Retell AI</strong> makes an outbound voice call to HOT leads.</li>
-</ul>
-<h2>The scoring engine</h2>
-<p>When the form is submitted, a GHL workflow sends the lead to an n8n webhook. The flow then:</p>
-<ol>
-<li>Parses the details the model needs: service of interest, source and the form answers.</li>
-<li>Asks OpenAI to score the lead HOT, WARM or COLD.</li>
-<li>Parses the response and writes the score back to an <strong>AI Lead Score</strong> custom field on the GHL contact.</li>
-<li>Routes by tier. HOT triggers a Retell outbound call. WARM and COLD get a tag, so GHL follows up at the right pace.</li>
-<li>Responds to the webhook, confirming the lead was processed.</li>
-</ol>
-<p>Only HOT leads get a call. That keeps the voice agent’s time, and the call costs, focused on the people most likely to book, while everyone else still gets a follow-up that fits.</p>
-<h2>A pipeline that shows the journey</h2>
-<p>The client journey pipeline has seven stages: New Lead, AI Scored, Call Attempted, Consultation Booked, Appointment Completed, Review Requested and Lost. The “AI Scored” stage sits right after New Lead, so the team can see at a glance that scoring happened. I wrote more about designing stages like this in <a href="/blog/gohighlevel-pipeline-stages-that-work/">pipeline stages your team will use</a>.</p>
-<h2>Six lifecycle workflows</h2>
-${fig('/assets/projects/blog/medspa-workflows.webp',1560,710,'GoHighLevel workflow list with six published lifecycle workflows','Six published workflows, each covering one moment in the client journey.')}
-<p>Everything after scoring runs in GHL, one workflow per moment:</p>
-<ul>
-<li><strong>New Lead, Form Submission</strong>: creates the opportunity and sends the first SMS and email.</li>
-<li><strong>Missed Call Text Back</strong>: texts anyone whose call was missed.</li>
-<li><strong>Appointment Reminder Sequence</strong>: reminds clients before their consultation.</li>
-<li><strong>Post-Appointment Review Request</strong>: asks for a review after the visit.</li>
-<li><strong>Lead Reactivation, 90 Day</strong>: brings back leads and clients who went quiet.</li>
-<li><strong>Referral System</strong>: asks happy clients to refer friends.</li>
-</ul>
-<p>Keeping them separate means the spa can pause referral requests during a busy month without touching reminders.</p>
-<h2>What a new lead looks like</h2>
-<p>When a Facebook lead submits the consultation form, within moments the contact is tagged, an opportunity appears in the pipeline, the lead receives a welcome SMS and a confirmation email, and the AI Lead Score field shows the result from n8n. The front desk opens one record and sees everything.</p>
-<h2>Things to watch</h2>
-<ul>
-<li><strong>Don’t rename the score field.</strong> Workflows and smart lists filter on AI Lead Score. Rename it and they quietly stop matching.</li>
-<li><strong>Test scoring changes.</strong> Editing the scoring prompt changes who gets called. Run a handful of sample leads through it before publishing.</li>
-<li><strong>Keep the webhook URL in sync.</strong> If the n8n flow is moved or republished, update the URL in the GHL workflow.</li>
-<li><strong>Verify the SMS sender</strong>, so the first text goes out without a retry.</li>
-</ul>
-<h2>Writing a scoring prompt</h2>
-<p>A useful scoring prompt is specific about what each tier means for this business. HOT might be “asked about a specific treatment and wants to book within two weeks”; WARM “interested but no timeframe”; COLD “price shopping or outside the service area”. I ask the model to return only the tier and a one-line reason, so the result is easy to parse and the team can see why a lead was scored the way it was. The reason is also the quickest way to spot a prompt that needs adjusting.</p>
-<h2>Why score at all?</h2>
-<p>Speed to lead matters most for the hottest leads, and calling everyone instantly is expensive and can feel pushy. Scoring lets you spend the expensive, fast response where it counts, and give everyone else a sensible, slower follow-up. The AI doesn’t replace the sales process; it decides the order.</p>`
-},
-{
- slug:'ai-sms-sales-assistant-human-handoff-gohighlevel',
- title:'An AI SMS sales assistant that knows when to hand off to a person',
- seoTitle:'AI SMS Sales Assistant with Human Handoff in GoHighLevel | Hanzla Amjad',
- description:'How an n8n AI agent replies to new GHL leads by SMS, steps back the moment a rep gets involved, hands off with tracking, and nurtures quiet leads on day 3, 7 and 15.',
- category:'GoHighLevel + AI',published:'2026-11-11',modified:'2026-11-11',
- keywords:['AI SMS assistant','GoHighLevel','n8n','human handoff','lead nurture','speed to lead'],
- related:['medspa-ai-lead-scoring-gohighlevel-n8n','multi-agent-sms-booking-system-n8n','gohighlevel-webhooks-inbound-outbound'],
- cover:{src:'/assets/projects/blog/ai-sms-first-reply.webp',width:1469,height:836,alt:'n8n workflow for an AI first-reply SMS agent with a human intervention check',caption:'The first-reply agent in n8n, with its built-in documentation note.'},
- body:`<p>The fastest reply to a new lead usually wins. But an AI that keeps texting after a salesperson has picked up the conversation is worse than no AI at all. This project, for two service businesses sharing one setup, was built around that balance: reply instantly, qualify, and step back cleanly when a person takes over.</p>
-<p>I was the sole technical owner of both GoHighLevel accounts and the n8n instance, and delivered it in five phases over about three months.</p>
-<h2>The first reply</h2>
-<p>When a lead submits a quote form or sends their first text, a GHL workflow calls an n8n webhook. The first-reply agent then:</p>
-<ol>
-<li>Parses the form data: contact, vehicle, services of interest, packages.</li>
-<li>Finds the GHL conversation and pulls the SMS history.</li>
-<li><strong>Checks for human intervention.</strong> If a rep has already texted or called this lead, it adds a handoff tag and stops.</li>
-<li>Builds the context for the model, including whether the business is currently open.</li>
-<li>Generates a reply with the GPT model.</li>
-<li>Checks for one of three outcomes: a normal reply, a handoff, or a stop.</li>
-</ol>
-<p>A normal reply goes out through the GHL API, so it appears in the same conversation the team uses. A handoff sends a short closing message and tags the contact. A stop (an opt-out) tags the contact and sends nothing.</p>
-<h2>The safety net: human intervention</h2>
-<p>The human-intervention check compares recent outbound messages and calls against a list of known staff user IDs. Once a rep has engaged, the AI steps back for good. Customers never get mixed messages from a bot and a person.</p>
-<p>The catch: when a new rep joins, their user ID has to be added to that list. Otherwise the AI doesn’t recognise them and may reply after they’ve spoken to the lead.</p>
-<h2>Handing off, and measuring it</h2>
-<p>When the AI decides a person is needed, it adds a handoff tag. That tag starts a GHL workflow which stamps the handoff time on a custom field, splits leads between the two sales reps, makes the rep the contact owner and sends them an internal notification.</p>
-<p>A smart list with custom date fields (handoff time, first human touch time and a daily handoff count) lets the team see how quickly a person picks up each lead. That number is what managers actually care about.</p>
-<h2>Nurturing leads that go quiet</h2>
-${fig('/assets/projects/blog/ai-sms-nurture.webp',1473,835,'Scheduled n8n nurture dispatcher that sends AI-written follow-ups','The nurture dispatcher runs on a schedule and only texts on day 3, 7 and 15.')}
-<p>Leads that don’t book go into a nurture stage. A scheduled n8n flow runs every 30 minutes during business hours and:</p>
-<ul>
-<li>Fetches opportunities in that stage and keeps only those on day 3, 7 or 15.</li>
-<li>Skips anyone already texted today, and processes up to 10 per run.</li>
-<li>Gathers context: contact and vehicle details, recent SMS, call notes and the current promotion.</li>
-<li>Writes a message whose tone changes over time: a casual check-in on day 3, a reference to their situation on day 7, a direct decision question on day 15.</li>
-<li>Logs every send to a table for monitoring.</li>
-</ul>
-<p>A last-message-sent date prevents double sends. Clearing that field by hand would break the schedule, so it’s documented clearly.</p>
-<h2>Revenue back in the CRM</h2>
-<p>Jobs were run in a separate field-service tool. Booking and payment data (scheduled date and revenue, service type, deposit status and final invoice) was written back onto the GHL opportunity, so sales could see revenue against each lead without leaving the CRM.</p>
-<h2>A segmented promotion</h2>
-<p>For a seasonal promotion, around 2,500 contacts were split into four groups: past customers or unconverted leads, each with or without a vehicle on file. Each group got its own SMS so the message fit the person. Contacts without a group tag were skipped, which is a simple safeguard against messaging the wrong list.</p>
-<h2>What made it work</h2>
-<ul>
-<li>GHL stayed the one place the team worked from; n8n did the heavy lifting behind it.</li>
-<li>The AI had a clear exit: stop, hand off, or reply.</li>
-<li>Every automated message was logged, so the team could review what the AI said.</li>
-<li>The current offer lived in one variable, so both AI agents mentioned the same promotion.</li>
-</ul>`
-},
-{
  slug:'gohighlevel-time-based-workshop-funnel',
  title:'A 5-day challenge funnel in GoHighLevel that times every message',
  seoTitle:'GoHighLevel Challenge Funnel with Time-Based Workflow Branches | Hanzla Amjad',
@@ -1123,5 +864,242 @@ ${fig('/assets/projects/blog/ai-sms-nurture.webp',1473,835,'Scheduled n8n nurtur
 </ul>
 <h2>The pattern in short</h2>
 <p>Collect answers in as many places as you need, bring everything into GoHighLevel with webhooks, qualify in one shared workflow, tag by category rather than a single yes or no, and notify the team the moment a lead arrives. For more on the webhook side, see <a href="/blog/gohighlevel-webhooks-inbound-outbound/">webhooks in GoHighLevel</a>.</p>`
+},
+{
+ slug:'gohighlevel-creator-ambassador-program-automation',
+ title:'Running a creator ambassador program from a GoHighLevel pipeline',
+ seoTitle:'Creator Ambassador Program Automation in GoHighLevel | Hanzla Amjad',
+ description:'How nine GHL workflows and a seven-stage pipeline handle creator applications, agreements, stay dates, reminders, drop-offs and content delivery with little manual work.',
+ category:'GoHighLevel workflows',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel workflows','ambassador program','influencer program CRM','pipeline automation','GHL documents and contracts'],
+ related:['gohighlevel-pipeline-stages-that-work','gohighlevel-custom-values-vs-custom-fields','gohighlevel-full-funnel-workflow-system'],
+ cover:{src:'/assets/projects/blog/creator-program-workflows.webp',width:1376,height:704,alt:'GoHighLevel workflow list for an ambassador program, numbered 01 to 08, all published',caption:'Nine numbered workflows, one for each moment in a creator’s journey. The account runs in French.'},
+ body:`<p>A hospitality client ran an ambassador program: content creators apply to stay at the property for free, and in return they post about it. Before this project, every step was done by hand: replying to applicants, sending the agreement, confirming dates and chasing content after the stay. People were forgotten in the middle, and nobody could see at a glance who was where.</p>
+<p>I rebuilt it in GoHighLevel with one pipeline and nine workflows. The team now does three things by hand (approve an application, move the card, enter the stay dates) and everything else runs on its own. The account runs in French, so the workflow names in the screenshots are French; I’ve translated them here.</p>
+<h2>The pipeline is the program</h2>
+<p>Every creator follows the same path, and each step is a pipeline stage:</p>
+<ol>
+<li>New applications</li>
+<li>Application approved, availability OK</li>
+<li>Creator has confirmed</li>
+<li>Agreement signed</li>
+<li>Booking confirmed</li>
+<li>Stay finished</li>
+<li>Content received</li>
+</ol>
+<p>Moving a creator to a stage is what fires the matching workflow. That makes the board both the to-do list and the control panel. Each stage also has a probability, from 20% at application to 80% once the agreement is signed, so the reports show how many stays are likely to happen.</p>
+${fig('/assets/projects/blog/creator-program-fields-pipeline.webp',1439,991,'GoHighLevel custom fields for creators and the seven pipeline stages with probabilities','Custom fields keep everything about a creator on their contact; the pipeline stages carry probabilities.')}
+<h2>Everything on the contact</h2>
+<p>I created a set of custom fields in their own folder, so everything about a creator lives on their contact record. The application form fills most of them automatically:</p>
+<ul>
+<li><strong>Profile</strong>: TikTok account, followers, average engagement rate, main audience location, portfolio link.</li>
+<li><strong>Stay</strong>: preferred dates, stay start date, stay end date.</li>
+<li><strong>Deliverables</strong>: carousel, short reel, long reel, plus a free comment field.</li>
+<li><strong>Content upload</strong>: upload link, file upload and a Drive or WeTransfer link, filled by a separate content form.</li>
+</ul>
+<p>The two stay-date fields matter most, because three workflows depend on them.</p>
+<h2>The nine workflows</h2>
+<ul>
+<li><strong>01 New application</strong>: creates the contact and opportunity, adds a note, sends a “we got your application” email and alerts the team. Creators get a reply straight away, even at weekends.</li>
+<li><strong>02 Application approved</strong>: logs a note and adds the creator to the follow-up workflow, because from here on the team is waiting on them.</li>
+<li><strong>03 Confirmation received</strong>: sends the agreement email and restarts the follow-up timer, so the next reminder is about the agreement, not the old confirmation.</li>
+<li><strong>04 Agreement signed</strong>: triggered by the signature in Documents &amp; Contracts. It moves the card itself, so nobody has to.</li>
+<li><strong>05 Booking confirmed</strong>: checks the stay dates are filled in. If they are, it formats them in French and sends the confirmation. If not, it alerts the team to add them and stops.</li>
+<li><strong>06 Follow-up and drop-off</strong>: no trigger of its own; other workflows add and remove creators.</li>
+<li><strong>07 Day before the stay</strong>: a date reminder on the start date, sent at 9:00 AM.</li>
+<li><strong>08 End of stay</strong>: on the end date at 6:00 PM, moves the card and sends the end-of-stay email.</li>
+<li><strong>09 Content received</strong>: when the content form is submitted, saves the upload details, moves the card to the last stage and confirms receipt.</li>
+</ul>
+<h2>Follow-up that cleans the board</h2>
+<p>Workflow 06 is the one that saves the most time. It waits seven days and checks whether the creator is still stuck at the same stage. If so, it sends a friendly reminder and logs it. After another seven days with no movement, it marks the opportunity as abandoned, logs a note and tells the team. If the creator has moved on in the meantime, it ends quietly.</p>
+<p>Creators who lose interest drop off after about two weeks instead of sitting on the board forever, and nobody has to remember who to chase.</p>
+<h2>Small details that matter</h2>
+<ul>
+<li><strong>No blank dates in emails.</strong> Workflow 05 checks the dates first, because an email saying “your stay from to” looks careless.</li>
+<li><strong>Dates in the local format.</strong> Two small formatter steps turn the date fields into “12 octobre 2026” so the email reads naturally.</li>
+<li><strong>Sensible send times.</strong> Date reminders wait until 9:00 AM or 6:00 PM, so nothing lands in the middle of the night.</li>
+<li><strong>Consistent email names.</strong> Each template is named with its number and purpose, so it’s easy to match a template to the workflow that sends it.</li>
+</ul>
+<h2>Notes for the team</h2>
+<ul>
+<li>Fill in the stay dates before moving a card to “Booking confirmed”.</li>
+<li>Moving a card sends emails, so be careful when tidying the board.</li>
+<li>Don’t move cards to “Agreement signed” by hand; the signature does it.</li>
+<li>A dropped creator can be reopened by moving their card back, and the workflows pick up from there.</li>
+</ul>
+<p>The same structure works for any program with a fixed sequence of steps and a lot of waiting on other people: partner onboarding, event speakers or affiliate programs.</p>`
+},
+{
+ slug:'gohighlevel-b2b-sales-crm-cold-cadence',
+ title:'A B2B sales CRM in GoHighLevel: inbound, cold cadence and missed calls',
+ seoTitle:'B2B Sales CRM in GoHighLevel: Cold Cadence & Missed Calls | Hanzla Amjad',
+ description:'How 16 GHL workflows give every lead source a path: instant replies, a cold outreach cadence with a call in the middle, reply handling, reminders and no-show recovery.',
+ category:'GoHighLevel workflows',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel B2B','cold outreach cadence','missed call text back','sales pipeline','GHL workflows','no-show follow-up'],
+ related:['gohighlevel-pipeline-stages-that-work','how-to-audit-a-gohighlevel-account','gohighlevel-ecom-vsl-qualification-funnel'],
+ cover:{src:'/assets/projects/blog/b2b-sales-workflows.webp',width:1600,height:578,alt:'GoHighLevel B2B sales workflows: cold cadence, reply handler, booking and reminders, follow-ups',caption:'The outbound folder, numbered in the order a prospect moves through it.'},
+ body:`<p>A B2B sales team had leads coming from everywhere: website forms, phone calls, Instagram, booking links and cold outreach lists. Each source was handled differently, depending on who noticed it first. I set up their GoHighLevel account so every source has its own path: an instant reply, timed follow-ups, a place in the pipeline and a handover to a sales rep when a person is actually needed.</p>
+<p>The result was 16 workflows in two folders: one for inbound, one for outbound.</p>
+<h2>One pattern, many sources</h2>
+<p>Most workflows follow the same shape. Something happens (a form, a call, a tag, a stage change). The lead gets an instant message. The pipeline is updated. If nothing happens next, a few timed follow-ups go out. And when a person needs to act, the workflow <strong>creates a task and assigns it</strong>, rather than hoping someone notices.</p>
+<p>Tasks are the key to that last part. Callbacks, replies and incomplete bookings all land on someone’s task list. If the team checks tasks daily, nothing is missed.</p>
+<h2>Inbound: catching every lead</h2>
+<ul>
+<li><strong>Inbound lead capture</strong>: any form submission. It creates a call-back task first, then sends an SMS and email confirmation, then follows up after one and three days. The task comes first on purpose: even if nobody is watching the inbox, the call-back is already on a rep’s list.</li>
+<li><strong>Instagram and incomplete bookings</strong>: three appointment triggers in one workflow, creating an opportunity, assigning it and adding a task to finish the booking.</li>
+<li><strong>Approved account onboarding</strong>: a welcome SMS and email, then checks on day 1, 3 and 5 for a first order. A customer who orders on day 2 stops getting “place your first order” messages.</li>
+<li><strong>No-show automation</strong>: an SMS and email to rebook straight away, another SMS on day 2 and a final email on day 5.</li>
+</ul>
+<h2>Missed calls</h2>
+${fig('/assets/projects/blog/b2b-missed-call-workflow.webp',1389,1933,'GoHighLevel missed call workflow with drip mode, SMS, wait for reply and an urgent callback task','Missed call text-back: text immediately, wait for a reply, and create an urgent callback task if they answer.')}
+<p>People who call want an answer now. If they don’t get one, they call the next business on their list. When an incoming call ends as busy or unanswered, this workflow texts back right away, then waits. If the caller replies, it sends booking options and creates an <strong>urgent callback task</strong>. If there’s no reply within a day, it ends. No extra messages to someone who didn’t engage.</p>
+<h2>Outbound: the cold cadence</h2>
+<p>Adding a B2B outreach tag, to one contact or a whole list, starts the cadence:</p>
+<ul>
+<li>Day 0: email 1, and the opportunity is created.</li>
+<li>Day 2: an SMS.</li>
+<li>Day 5: a task for the rep to call the prospect personally.</li>
+<li>Day 7: email 2.</li>
+<li>Day 11: email 3, the last one.</li>
+</ul>
+<p>The phone call sits in the middle on purpose. By day 5, the prospect has seen two messages, so the call isn’t completely cold. A second, longer sequence for contacts moved into a cold outreach stage spaces its seven touches over two weeks, with the gaps growing (1, 2, 4, then 7 days): steady pressure early, without feeling like spam later.</p>
+<h2>Workflows that talk to each other</h2>
+<p>The outbound workflows hand over cleanly:</p>
+<ol>
+<li>The cold cadence reaches out.</li>
+<li>When the prospect texts back, the <strong>reply handler</strong> updates the opportunity, assigns a rep and creates a task to answer and book. Then it stops; once a person owns the lead, automation steps back.</li>
+<li>When they book, the <strong>booking workflow</strong> moves the opportunity, removes them from the cadence, confirms and sends reminders before the meeting.</li>
+<li>If they don’t answer or don’t show, the <strong>no-answer</strong> and <strong>no-show</strong> follow-ups try to get them back on the calendar with a few polite texts.</li>
+</ol>
+<p>Removing the prospect from the cadence when they book is the step people forget. Without it, someone who just said yes can still get a cold “just checking in” email the next day.</p>
+<h2>Notes for the team</h2>
+<ul>
+<li><strong>Stages and tags start workflows.</strong> Moving a contact into the cold outreach stage, or adding the outreach tag, starts a sequence. Check before bulk-tagging a list or tidying the board.</li>
+<li><strong>Test drafts before publishing.</strong> Two notification workflows were built but left in draft until their alerts were tested.</li>
+<li><strong>Use enrollment history.</strong> It shows exactly who went through a workflow and when, the quickest way to check something worked.</li>
+</ul>
+<h2>The idea in one line</h2>
+<p>Every way a lead can reach the business has a path, and every follow-up stops on its own when the person replies, books or orders. That’s what keeps automation helpful instead of annoying.</p>`
+},
+{
+ slug:'gohighlevel-ecom-vsl-qualification-funnel',
+ title:'A VSL and survey qualification funnel in GoHighLevel',
+ seoTitle:'GoHighLevel VSL & Survey Qualification Funnel with Call Reminders | Hanzla Amjad',
+ description:'How a GHL funnel turns every survey answer into a tag, alerts the team, books a call and sends reminders at 24 hours, 2 hours and 10 minutes so leads show up.',
+ category:'Funnels',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel funnel','VSL funnel','survey qualification','call booking','appointment reminders','sales pipeline'],
+ related:['gohighlevel-survey-funnel-lead-qualification','gohighlevel-b2b-sales-crm-cold-cadence','gohighlevel-time-based-workshop-funnel'],
+ cover:{src:'/assets/projects/blog/ecom-call-booking-workflow.webp',width:555,height:759,alt:'GoHighLevel call booking workflow with reminders 24 hours, 2 hours and 10 minutes before the call',caption:'The call booking workflow: two qualified branches, each with reminders timed against the appointment.'},
+ body:`<p>For a done-for-you e-commerce store service, the sales process was a call with a closer. The funnel’s job was to send them qualified people who actually turned up. I built the whole lead-to-call system in GoHighLevel: a video sales letter (VSL) page, a short qualification survey, call booking, team alerts, a pipeline and reminders.</p>
+<h2>The page: sell and qualify in one scroll</h2>
+<p>The funnel has two steps: the home page and a thank you page. The home page does both jobs:</p>
+<ul>
+<li><strong>Hero and VSL</strong>: a headline, the key promises as short check-mark chips, and a “watch this first” video.</li>
+<li><strong>Qualification survey</strong>: a multi-step survey that starts with available capital, in six bands.</li>
+<li><strong>Proof</strong>: years in business, stores built and team size.</li>
+<li><strong>A second call to action</strong> to apply and book.</li>
+<li><strong>Disclaimer</strong>: an income and marketplace disclaimer in the footer, which a service like this needs.</li>
+</ul>
+<p>The home page is set up as the control for an A/B split test, so a new headline or video can be tested later without rebuilding the page.</p>
+<h2>Every answer becomes a tag</h2>
+${fig('/assets/projects/blog/ecom-survey-qualification.webp',730,768,'GoHighLevel survey qualification workflow with a branch for every survey answer','The qualification workflow has a branch for every answer to every question.')}
+<p>The first workflow runs the moment the survey is submitted. It alerts the team by internal notification, email and SMS, then works through the answers. Each question has its own condition with a branch per answer:</p>
+<ul>
+<li>Available capital (six bands, matching the page)</li>
+<li>Setup budget</li>
+<li>Start timeline</li>
+<li>Source of funds</li>
+<li>Who makes the decision</li>
+<li>What result the lead expects</li>
+</ul>
+<p>Every answer adds a tag, such as the capital band or a “partner required” flag, and qualified leads are created as opportunities in the pipeline. The closer can read the lead’s budget, timeline and decision-makers from the contact record without opening the survey.</p>
+<p>It’s a large workflow, but it’s simple to maintain: one question, one condition, one tag per answer. Changing a question means changing one branch.</p>
+<h2>Getting leads to show up</h2>
+<p>When a lead books, the call booking workflow checks they came through the survey or the Meta ads source, creates or updates the opportunity, and confirms the booking by SMS. Then it counts down to the call:</p>
+<ul>
+<li><strong>24 hours before</strong>: an SMS and email on how to show up prepared.</li>
+<li><strong>2 hours before</strong>: an SMS reminder.</li>
+<li><strong>10 minutes before</strong>: a final SMS.</li>
+</ul>
+<p>The waits are relative to the appointment time, so the reminders always line up with the actual call. That also means the calendar slot must be correct, or every reminder fires at the wrong time.</p>
+<h2>What happens around the call</h2>
+<p>Booking is only half of it. The other workflows in the folder cover what happens around the call. A pre-call email sequence gives the lead useful context, so the closer isn’t starting from zero. A closer notification tells the sales person a call is coming up, with the tags from the survey already on the contact. If the lead misses the call, an appointment recovery workflow offers a new time instead of letting them go cold. And replies or reschedule requests to the reminder messages each have their own workflow, so “can we do Thursday instead?” gets handled properly rather than sitting unread in the inbox.</p>
+<h2>A numbered folder</h2>
+<p>All seven workflows sit in one folder, numbered in the order a lead meets them:</p>
+<ol>
+<li>Survey qualification</li>
+<li>Call booking and pre-call reminders</li>
+<li>Pre-call email nurture</li>
+<li>Closer notification</li>
+<li>Appointment recovery, for missed calls</li>
+<li>Appointment reply handling</li>
+<li>Reschedule requests</li>
+</ol>
+<p>Numbering sounds trivial, but it makes the account readable for anyone who opens it later. The order on screen is the order of the journey.</p>
+<h2>The pipeline</h2>
+<p>Leads from Meta ads land in their own pipeline with stages that follow the sales process: a stage for leads below the main budget threshold, a “financially qualified” stage, then call attempts. Seeing budget fit as a stage helps the closer prioritise who to call first.</p>
+<h2>Before sending traffic</h2>
+<ul>
+<li><strong>Connect a domain</strong> to the funnel.</li>
+<li><strong>Keep survey answers and tags in sync.</strong> The booking workflow branches on survey tags. If an answer or tag name changes, update both workflows.</li>
+<li><strong>Number new workflows</strong> and keep them in the same folder.</li>
+<li><strong>Check enrollment history</strong> to confirm who went through each step.</li>
+</ul>
+<p>Qualification and show-up rate are where call funnels usually leak. Tagging every answer handles the first; reminders timed to the appointment handle the second.</p>`
+},
+{
+ slug:'gohighlevel-full-funnel-workflow-system',
+ title:'Organising GoHighLevel workflows by the customer journey',
+ seoTitle:'Full-Funnel GoHighLevel Workflow System: Capture to Reputation | Hanzla Amjad',
+ description:'How I organise 27 GHL workflows into five folders (capture, response, conversion, reactivation and reputation) so any workflow is easy to find and the system is easy to hand over.',
+ category:'GoHighLevel workflows',published:'2026-11-11',modified:'2026-11-11',
+ keywords:['GoHighLevel workflows','workflow folders','lead capture','missed call text back','client reactivation','review requests'],
+ related:['how-to-audit-a-gohighlevel-account','gohighlevel-b2b-sales-crm-cold-cadence','gohighlevel-creator-ambassador-program-automation'],
+ cover:{src:'/assets/projects/blog/full-funnel-capture-folder.webp',width:1600,height:651,alt:'GoHighLevel Capture folder with numbered workflows for each lead source',caption:'The Capture folder: one numbered workflow per lead source.'},
+ body:`<p>A long, unsorted workflow list is one of the first things I notice in an account that’s grown without a plan. Finding the right workflow takes minutes, and nobody is sure what’s safe to change. For a clinic-style business, I organised 27 workflows around the life of a customer instead: how they’re captured, how quickly they get a reply, how they’re converted into a booking, how lapsed clients come back, and how reviews and referrals are collected.</p>
+<h2>Five folders, one journey</h2>
+<ul>
+<li><strong>Capture</strong>: catch every lead, from any channel, into the CRM.</li>
+<li><strong>Response</strong>: reply fast, and handle reminders, opt-outs and keywords.</li>
+<li><strong>Conversion</strong>: nurture leads and clients towards the next booking.</li>
+<li><strong>Reactivation</strong>: win back past and dormant clients.</li>
+<li><strong>Reputation</strong>: ask for feedback, reviews and referrals.</li>
+</ul>
+<p>Workflow names start with a number so they sort in the order they’re used. Opening a folder shows that stage of the journey from top to bottom.</p>
+<h2>Capture: one entry per source</h2>
+<p>Every place a lead can come from has its own entry workflow: website lead capture, appointment booking, Facebook lead forms, LinkedIn lead forms, and DMs from Instagram, Messenger, TikTok and WhatsApp. Each tags the lead with its source and brings it into the CRM in the same way.</p>
+<p>Separate workflows per source might look like duplication, but they make reporting easy (“how many leads did Instagram bring this month?”) and let each channel have its own first message. At the time of the handover, the busiest were appointment booking, lead capture and Instagram DMs.</p>
+<h2>Response: speed and respect</h2>
+<ul>
+<li><strong>Missed call text-back</strong>: texts anyone whose call wasn’t answered.</li>
+<li><strong>Appointment reminders</strong>: before every appointment.</li>
+<li><strong>DND handling</strong>: contacts who opt out are handled properly and stay out.</li>
+<li><strong>Keyword emails</strong>: send the right email when a contact replies with a specific keyword.</li>
+</ul>
+<p>Keeping opt-out handling in its own visible workflow matters. When someone asks “how do we make sure people who unsubscribe don’t get messages?”, there’s one place to point to.</p>
+<h2>Conversion: moving towards the booking</h2>
+<p>A general email and SMS nurture sequence, check-ins at day 15 and day 30 for a specific program, and a cancellation workflow that handles cancelled appointments cleanly. The cancellation workflow is easy to overlook, but a cancellation is a chance to rebook, not just a calendar change.</p>
+<h2>Reactivation: several ways back</h2>
+<p>Past clients are the easiest people to bring back, but not all of them are the same. This folder has different approaches depending on how long it’s been:</p>
+<ul>
+<li>A main win-back campaign.</li>
+<li>A light check-in for recently quiet contacts.</li>
+<li>Segmentation that sorts lapsed clients and tags them.</li>
+<li>A rebooking workflow that puts returning clients back in the pipeline.</li>
+<li>A manual dormant-database reactivation, run only when someone adds an old list.</li>
+<li>A sequence aimed specifically at people who have paid before.</li>
+</ul>
+<p>Making the dormant-list workflow manual is deliberate. Old lists need checking before anyone messages them, so a person decides when it runs.</p>
+<h2>Reputation: feedback before reviews</h2>
+<p>After a visit, a feedback survey goes out first. Once it’s completed, happy clients are asked for a review, and a referral workflow asks for and tracks referrals. Asking for feedback first gives unhappy clients a private way to be heard before anyone is pointed at a public review page.</p>
+<h2>A premium action, used carefully</h2>
+<p>One case-review workflow also logs each lead to a Google Sheet, assigns an owner, notifies the team and sends an SMS two minutes later. The Google Sheets step is a premium action in GHL, so it adds a small cost per run. It’s worth it when the client wants a shared list they can open without logging into the CRM, but it’s not something to add everywhere by default.</p>
+<h2>Why structure pays off</h2>
+<ul>
+<li><strong>Handover is easier.</strong> A new team member can understand the system from the folder names alone.</li>
+<li><strong>Changes are safer.</strong> You know which stage a workflow serves before you touch it.</li>
+<li><strong>Gaps are visible.</strong> An empty folder or a thin one shows where the journey needs work.</li>
+</ul>
+<p>If your workflow list has grown messy, this is usually the first fix I suggest after an <a href="/blog/how-to-audit-a-gohighlevel-account/">account audit</a>: group by journey stage, number by order, and archive what no longer serves a stage.</p>`
 }
 ];
