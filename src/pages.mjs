@@ -13,8 +13,8 @@ const crumbNav=items=>`<nav class="breadcrumbs" aria-label="Breadcrumb">${items.
 const hero=({items,eyebrow,title,accent,intro})=>`<section class="page-hero wrap">${crumbNav(items)}<p class="eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}${accent?`<br><span>${esc(accent)}</span>`:''}</h1>${intro?`<p class="page-intro">${intro}</p>`:''}</section>`;
 const legal=(sections)=>`<div class="legal-copy wrap"><div class="prose">${sections}</div></div>`;
 
-function postCard(p){
- return `<article class="post-card reveal"><a href="/blog/${p.slug}/" class="post-card-link">${p.cover?`<span class="post-card-image"><img src="${p.cover.src}" width="${p.cover.width}" height="${p.cover.height}" alt="" loading="lazy" decoding="async"></span>`:`<span class="post-card-image post-card-blank" aria-hidden="true">${esc(p.category)}</span>`}<span class="post-card-meta">${esc(p.category)} · ${readingTime(p.body)} min read</span><h2>${esc(p.title)}</h2><p>${esc(p.description)}</p><span class="text-link">Read the guide ${icon('arrow')}</span></a></article>`;
+export function postCard(p,heading='h2'){
+ return `<article class="post-card reveal"><a href="/blog/${p.slug}/" class="post-card-link">${p.cover?`<span class="post-card-image"><img src="${p.cover.src}" width="${p.cover.width}" height="${p.cover.height}" alt="" loading="lazy" decoding="async"></span>`:`<span class="post-card-image post-card-blank" aria-hidden="true">${esc(p.category)}</span>`}<span class="post-card-meta">${esc(p.category)} · ${readingTime(p.body)} min read</span><${heading}>${esc(p.title)}</${heading}><p>${esc(p.description)}</p><span class="text-link">Read the guide ${icon('arrow')}</span></a></article>`;
 }
 
 function authorBox(){

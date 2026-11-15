@@ -112,7 +112,7 @@ ${fig('/assets/projects/ghl-ai-10.webp',1600,501,'Post-appointment GoHighLevel w
  title:'One webhook, a client ready to go: automating onboarding with Make',
  seoTitle:'Client Onboarding Automation with Make, Google Drive & GHL | Hanzla Amjad',
  description:'How a single webhook creates numbered Google Drive folders, a new GoHighLevel location and Slack channels, then hands everything to the operations system.',
- category:'Operations automation',published:'2026-10-30',modified:'2026-10-30',
+ category:'Operations automation',published:'2026-10-30',modified:'2026-11-15',
  keywords:['client onboarding','Make.com','Google Drive','GoHighLevel API','Slack'],
  related:['gohighlevel-webhooks-inbound-outbound','make-vs-zapier-vs-n8n-for-gohighlevel','gohighlevel-snapshots-what-transfers'],
  cover:{src:'/assets/projects/onboarding-01.webp',width:1813,height:884,alt:'Make.com onboarding scenario connecting Google Drive, GoHighLevel, Slack and an operations endpoint',caption:'The onboarding engine: one incoming webhook, every setup step after it.'},
@@ -150,6 +150,9 @@ ${fig('/assets/projects/onboarding-07.webp',828,870,'Final HTTP payload sending 
 <p>It adds an hour to the build. It saves a messy afternoon the first time Slack’s API has a bad day.</p>
 <h2>Adapting it to your agency</h2>
 <p>The specific tools are less important than the order. Start by listing every step your team does today when a client signs, in the order they do it, and note what information each step needs. That list becomes the scenario. Some agencies add a welcome email from GHL, a ClickUp or Asana project, or an invoice in their accounting tool. Each is just another module after the webhook.</p>
+<h2>Numbers from a live run</h2>
+<p>In the version I handed over most recently, the client fills in an onboarding form inside GoHighLevel, and the form’s webhook starts the Make scenario immediately. The main folder is named with a hash, the client number and the business name (for example “#C14 Business Name”), so folders sort in order and anyone can match a folder to a client at a glance. The GHL sub-account is created with the agency snapshot already loaded, and the new location ID is passed to the Slack step.</p>
+<p>The latest run finished in about five seconds using 11 operations, and over a week the whole scenario used only a few dozen credits. Onboarding automation is rarely expensive to run; what it saves is the half hour of setup and the steps people forget.</p>
 <h2>Why this is worth building</h2>
 <ul>
 <li><strong>Consistency.</strong> Every client gets the same structure, named the same way.</li>
@@ -214,7 +217,7 @@ ${fig('/assets/projects/retell-04.webp',1577,640,'GoHighLevel workflows for inco
  title:'A2P 10DLC in GoHighLevel: what gets registrations approved',
  seoTitle:'A2P 10DLC Registration in GoHighLevel: Approval Checklist | Hanzla Amjad',
  description:'The checks I run before submitting an A2P brand and campaign in the GHL Trust Center, and the most common reasons registrations get rejected.',
- category:'A2P & messaging',published:'2026-10-30',modified:'2026-10-30',
+ category:'A2P & messaging',published:'2026-10-30',modified:'2026-11-15',
  keywords:['A2P 10DLC','GoHighLevel Trust Center','SMS compliance','campaign registration','LC Phone'],
  related:['gohighlevel-ai-booking-agent-workflow','gohighlevel-snapshots-what-transfers','gohighlevel-saas-mode-setup-checklist'],
  cover:{src:'/assets/projects/a2p-01.webp',width:1915,height:906,alt:'GoHighLevel Trust Center showing an approved A2P brand and campaign',caption:'An approved brand and campaign in the GHL Trust Center.'},
@@ -271,6 +274,8 @@ ${note('<p>“I agree to receive appointment reminders and updates by text messa
 <li>Two or more realistic sample messages with the brand name and opt-out language.</li>
 <li>Campaign description and opt-in description written in plain, specific sentences.</li>
 </ol>
+<h2>A track record, not a promise</h2>
+<p>Following this checklist, I’ve taken ten client accounts through brand and campaign approval, and nine of them through SHAKEN/STIR caller ID verification as well. The approval screenshots are on my <a href="/#a2p">portfolio</a>, and I wrote up what I learned across those accounts in <a href="/blog/a2p-shaken-stir-registration-ten-gohighlevel-accounts/">A2P and SHAKEN/STIR across ten GoHighLevel accounts</a>. Past approvals don’t guarantee the next one, but they show which details reviewers care about.</p>
 <h2>If you get rejected</h2>
 <p>Read the rejection reason carefully. It’s usually short and vague, but it points to one of the areas above. Fix the root cause, especially on the website, before resubmitting. Resubmitting the same details with small wording changes rarely works.</p>
 <p>A2P isn’t exciting, but it decides whether every SMS workflow you build actually reaches anyone. It’s worth getting right the first time.</p>`
@@ -406,7 +411,7 @@ ${note('<p>Plan requirements and features change. SaaS mode is tied to HighLevel
  title:'Make, Zapier or n8n with GoHighLevel? How I choose',
  seoTitle:'Make vs Zapier vs n8n for GoHighLevel Automation | Hanzla Amjad',
  description:'When I keep automation inside GHL workflows, and when I reach for Make, Zapier or n8n instead, based on the logic, volume and who will maintain it.',
- category:'Integrations',published:'2026-10-30',modified:'2026-10-30',
+ category:'Integrations',published:'2026-10-30',modified:'2026-11-15',
  keywords:['Make.com','Zapier','n8n','GoHighLevel integrations','automation tools'],
  related:['gohighlevel-webhooks-inbound-outbound','client-onboarding-automation-make-google-drive-gohighlevel','ghost-to-gohighlevel-email-automation-make'],
  cover:{src:'/assets/projects/onboarding-01.webp',width:1813,height:884,alt:'A multi-step Make.com scenario with routers and HTTP modules',caption:'A multi-step scenario like this is where Make earns its place.'},
@@ -457,6 +462,8 @@ ${note('<p>Plan requirements and features change. SaaS mode is tied to HighLevel
 <li><strong>“When a client signs, create folders, a sub-account and channels.”</strong> Make. Several systems, branching and API calls in one flow.</li>
 <li><strong>“Sync 20,000 records every night between GHL and our database.”</strong> n8n or a small custom script, if the team can maintain it. Per-operation pricing on that volume adds up.</li>
 </ul>
+<h2>What I actually used</h2>
+<p>Looking back at my own projects: the <a href="/blog/gohighlevel-full-funnel-workflow-system/">27-workflow system</a>, the <a href="/blog/gohighlevel-b2b-sales-crm-cold-cadence/">B2B sales CRM</a> and the <a href="/blog/gohighlevel-creator-ambassador-program-automation/">ambassador program</a> run entirely inside GoHighLevel, with no external automation tool at all. Make came in only where GHL had to talk to several other systems at once, like the <a href="/blog/client-onboarding-automation-make-google-drive-gohighlevel/">client onboarding engine</a> (Drive, the GHL API and Slack) and the <a href="/blog/ghost-to-gohighlevel-email-automation-make/">Ghost newsletter</a>. That ratio is typical: most automation belongs in GHL, and an external tool earns its place for the few cross-system jobs.</p>
 <h2>A mix is normal</h2>
 <p>Plenty of my builds use more than one. GHL handles the customer-facing workflow, and a Make scenario handles the one awkward integration. That’s not messy, as long as it’s documented: write down which tool does what, and where the hand-offs between them happen.</p>`
 },
@@ -465,7 +472,7 @@ ${note('<p>Plan requirements and features change. SaaS mode is tied to HighLevel
  title:'Custom Values vs custom fields in GoHighLevel: which one to use',
  seoTitle:'GoHighLevel Custom Values vs Custom Fields Explained | Hanzla Amjad',
  description:'The difference between GHL Custom Values and custom fields, with examples of when each is the right choice and how to reference them in emails and workflows.',
- category:'GoHighLevel setup',published:'2026-10-30',modified:'2026-10-30',
+ category:'GoHighLevel setup',published:'2026-10-30',modified:'2026-11-15',
  keywords:['GoHighLevel Custom Values','custom fields','merge fields','GHL templates'],
  related:['ghost-to-gohighlevel-email-automation-make','gohighlevel-snapshots-what-transfers','gohighlevel-ai-booking-agent-workflow'],
  cover:{src:'/assets/projects/ghost-03.webp',width:1600,height:517,alt:'GoHighLevel Custom Values settings holding account-wide content',caption:'Custom Values: one value for the whole sub-account.'},
@@ -513,6 +520,12 @@ ${fig('/assets/projects/ghost-04.webp',1212,869,'Email template combining contac
 <li><strong>Creating duplicate fields.</strong> “Budget”, “budget_2” and “Budget (new)” is a sign it’s time to clean up.</li>
 <li><strong>Unclear names.</strong> Name keys so they explain themselves: <code>booking_link</code>, not <code>link1</code>.</li>
 </ul>
+<h2>Examples from real accounts</h2>
+<ul>
+<li>In a <a href="/blog/gohighlevel-creator-ambassador-program-automation/">creator ambassador program</a>, each creator’s TikTok account, follower count, engagement rate and stay dates are custom fields in their own folder. The stay dates are what three workflows use to send reminders on the right day, so they have to be per-contact.</li>
+<li>In a <a href="/blog/gohighlevel-ecom-vsl-qualification-funnel/">VSL qualification funnel</a>, survey answers like budget band and timeline are stored on the contact and also turned into tags, so the closer can filter and prioritise.</li>
+<li>In the Ghost newsletter automation, the latest post is a Custom Value, because every recipient sees the same content.</li>
+</ul>
 <h2>Quick rule</h2>
 <p>Ask: “Would this be different for each contact?” If yes, custom field. If no, Custom Value.</p>`
 },
@@ -521,7 +534,7 @@ ${fig('/assets/projects/ghost-04.webp',1212,869,'Email template combining contac
  title:'Webhooks in GoHighLevel: sending and receiving data the reliable way',
  seoTitle:'GoHighLevel Inbound & Outbound Webhooks Guide | Hanzla Amjad',
  description:'How GHL inbound webhook triggers and outbound webhook actions work, how I map and test payloads, and the safety checks I add before going live.',
- category:'Integrations',published:'2026-10-30',modified:'2026-10-30',
+ category:'Integrations',published:'2026-10-30',modified:'2026-11-15',
  keywords:['GoHighLevel webhooks','inbound webhook trigger','custom webhook','API integration','Make.com'],
  related:['make-vs-zapier-vs-n8n-for-gohighlevel','retell-ai-gohighlevel-outbound-calls-make','client-onboarding-automation-make-google-drive-gohighlevel'],
  cover:{src:'/assets/projects/retell-03.webp',width:867,height:460,alt:'A webhook passing booking data to GoHighLevel through an HTTP POST',caption:'A webhook passing data into GoHighLevel with an HTTP POST.'},
@@ -565,6 +578,8 @@ ${note('<p><code>{ "event": "appointment_booked", "contact_id": "…", "email": 
 <li>Did the action fail after arriving? Look for an error on the step after the trigger, often a missing required field.</li>
 </ol>
 <p>Going in that order turns “it’s not working” into a specific answer in a few minutes.</p>
+<h2>Webhooks in real projects</h2>
+<p>In a <a href="/blog/gohighlevel-survey-funnel-lead-qualification/">survey funnel</a> for a lead generation brand, a Webflow form sends every submission to a GHL inbound webhook. That workflow creates the contact, alerts the team in Slack and adds a tag, and the tag starts the qualification logic shared with the GHL survey. It became the busiest workflow in the account, with well over a thousand enrollments. In the <a href="/blog/client-onboarding-automation-make-google-drive-gohighlevel/">client onboarding engine</a>, it works the other way: a GHL form sends its answers out to a Make webhook, which builds everything else.</p>
 <h2>Testing</h2>
 <p>Test with realistic records, not “test test”: a contact with an accent in their name, a missing phone number, a duplicate email, an international number. These are the records that will arrive in real life, usually on the first day.</p>
 <p>Webhooks are one of the most useful tools in GoHighLevel. Treated carefully, they let GHL connect with almost anything.</p>`
@@ -574,7 +589,7 @@ ${note('<p><code>{ "event": "appointment_booked", "contact_id": "…", "email": 
  title:'How I audit a GoHighLevel account before changing anything',
  seoTitle:'How to Audit a GoHighLevel Account: A Practical Checklist | Hanzla Amjad',
  description:'The order I review an existing GHL sub-account in: lead sources, pipelines, workflows, fields, messaging and integrations, and how I turn that into a fix list.',
- category:'GoHighLevel setup',published:'2026-11-11',modified:'2026-11-11',
+ category:'GoHighLevel setup',published:'2026-11-11',modified:'2026-11-15',
  keywords:['GoHighLevel audit','GHL account review','GHL workflows','pipeline cleanup','CRM audit'],
  related:['gohighlevel-pipeline-stages-that-work','gohighlevel-custom-values-vs-custom-fields','gohighlevel-snapshots-what-transfers'],
  cover:{src:'/assets/projects/ghl-ai-02.webp',width:1459,height:888,alt:'A GoHighLevel routing workflow with condition branches',caption:'An audit is mostly reading workflows like this one and asking what each branch is for.'},
@@ -635,6 +650,8 @@ ${note('<p><code>{ "event": "appointment_booked", "contact_id": "…", "email": 
 <li><strong>Consider</strong>: new automations or integrations that would help, with a rough scope.</li>
 </ol>
 <p>Sometimes the conclusion is that a rebuild is the right call. More often, a dozen targeted fixes get the account working properly, and the client keeps everything that was already doing its job.</p>
+<h2>What usually comes after the audit</h2>
+<p>The most common first fix is structure. In one account, I reorganised 27 workflows into five folders following the customer journey (capture, response, conversion, reactivation and reputation) and numbered them in the order they run. I described that in <a href="/blog/gohighlevel-full-funnel-workflow-system/">organising GoHighLevel workflows by the customer journey</a>. The second most common fix is making sure follow-up sequences stop when someone replies or books, which I cover in the <a href="/blog/gohighlevel-b2b-sales-crm-cold-cadence/">B2B sales CRM case study</a>.</p>
 <h2>Doing a quick version yourself</h2>
 <p>If you only have an hour, do steps 1, 3 and 7: list your lead sources, check your published workflows for duplicates and missing exits, and push one test lead through your main form. You’ll find most of the serious problems that way.</p>`
 },
@@ -643,7 +660,7 @@ ${note('<p><code>{ "event": "appointment_booked", "contact_id": "…", "email": 
  title:'Designing GoHighLevel pipeline stages your team will actually use',
  seoTitle:'GoHighLevel Pipeline Stages: How to Design Them Well | Hanzla Amjad',
  description:'How I plan GHL pipelines: stages that show progress, clear entry and exit rules, automation that moves opportunities, and when to use a second pipeline.',
- category:'GoHighLevel setup',published:'2026-11-11',modified:'2026-11-11',
+ category:'GoHighLevel setup',published:'2026-11-11',modified:'2026-11-15',
  keywords:['GoHighLevel pipeline','GHL opportunities','pipeline stages','CRM setup','sales pipeline'],
  related:['how-to-audit-a-gohighlevel-account','gohighlevel-ai-booking-agent-workflow','gohighlevel-snapshots-what-transfers'],
  cover:{src:'/assets/projects/ghl-ai-06.webp',width:866,height:894,alt:'A GoHighLevel workflow reacting to an appointment status change',caption:'Workflows like this one keep opportunities in the right stage without anyone dragging cards.'},
@@ -693,6 +710,10 @@ ${note('<p><code>{ "event": "appointment_booked", "contact_id": "…", "email": 
 <p>Even a rough value on each opportunity turns the pipeline into a forecast. Set a default value per service if exact amounts aren’t known yet, and update it when a proposal goes out. GHL’s reporting can then show the value sitting in each stage, which tells a business owner much more than a count of cards.</p>
 <h2>Build it with the people who use it</h2>
 <p>I sketch the stages and rules, then walk the team through them before building anything. They know which steps really happen and which only exist on paper. A pipeline that matches how people already work gets used. One that matches a template from the internet usually doesn’t.</p>
+<h2>Two pipelines from real projects</h2>
+<p>A <a href="/blog/gohighlevel-creator-ambassador-program-automation/">creator ambassador program</a> I built has seven stages, from “New applications” to “Content received”, each with a probability between 20% and 80%. Moving a card is what sends the next email, so the pipeline is both the to-do list and the control panel.</p>
+<p>A <a href="/blog/gohighlevel-ecom-vsl-qualification-funnel/">sales funnel for a done-for-you service</a> uses budget fit as a stage, with leads below the main budget threshold kept apart from financially qualified ones, followed by call attempts. The closer works from the top of the board down.</p>
+<p>Different businesses, same principle: each stage says how close the person is to the outcome, and workflows move cards wherever an event makes the change obvious.</p>
 <h2>A starting point</h2>
 <p>If you need somewhere to begin, this works for many appointment-based businesses:</p>
 <ol>
@@ -1101,5 +1122,120 @@ ${fig('/assets/projects/blog/ecom-survey-qualification.webp',730,768,'GoHighLeve
 <li><strong>Gaps are visible.</strong> An empty folder or a thin one shows where the journey needs work.</li>
 </ul>
 <p>If your workflow list has grown messy, this is usually the first fix I suggest after an <a href="/blog/how-to-audit-a-gohighlevel-account/">account audit</a>: group by journey stage, number by order, and archive what no longer serves a stage.</p>`
+},
+{
+ slug:'a2p-shaken-stir-registration-ten-gohighlevel-accounts',
+ title:'A2P 10DLC and SHAKEN/STIR across ten GoHighLevel accounts',
+ seoTitle:'A2P 10DLC & SHAKEN/STIR in GoHighLevel: Lessons from 10 Accounts | Hanzla Amjad',
+ description:'What I learned taking ten client accounts through A2P brand and campaign approval and SHAKEN/STIR caller ID verification in the GHL Trust Center.',
+ category:'A2P & messaging',published:'2026-11-15',modified:'2026-11-15',
+ keywords:['A2P 10DLC','SHAKEN/STIR','GoHighLevel Trust Center','caller ID verification','Spam Likely','SMS compliance'],
+ related:['a2p-10dlc-registration-gohighlevel-approval','gohighlevel-email-sending-domain-setup','how-to-audit-a-gohighlevel-account'],
+ cover:{src:'/assets/projects/a2p-02.webp',width:1917,height:920,alt:'GoHighLevel Trust Center showing approved A2P brand and campaign registration',caption:'One of the Trust Center pages: brand and campaign both approved.'},
+ body:`<p>I keep a record of every phone compliance registration I complete, because clients often ask for proof before they hire someone to do theirs. Across ten client accounts, all ten were approved for A2P 10DLC (both brand and campaign), and nine also had SHAKEN/STIR caller ID verification completed. The tenth had texting approved; its SHAKEN/STIR registration simply hadn’t been started yet when I took the screenshot.</p>
+<p>The businesses were very different: a marketing agency, an AI company, a cosmetic clinic, a home care provider, a coworking space, a real estate buyer, a consultancy and a health coaching brand, in the US and Australia. The process was the same every time, and so were the mistakes worth avoiding.</p>
+<h2>Two registrations, two problems</h2>
+<p>They’re often mentioned together, but they solve different problems:</p>
+<ul>
+<li><strong>A2P 10DLC is for text messages.</strong> US carriers require businesses texting from regular 10-digit numbers to register who they are (the brand) and how they’ll text people (the campaign). Without it, messages are filtered or blocked.</li>
+<li><strong>SHAKEN/STIR is for calls.</strong> It verifies to carriers that the business really owns the numbers it calls from. Verified calls are less likely to be blocked or shown as “Spam Likely”, which matters a lot for anyone making outbound calls.</li>
+</ul>
+<p>A client running SMS follow-up and a sales team making calls needs both. Many accounts I audit have done one and not the other.</p>
+<h2>Where to find it</h2>
+<p>In each sub-account, both live in the Trust Center under the phone system settings. The page shows status badges for the brand, the campaign and SHAKEN/STIR. If a badge says “Start registration”, nothing has been submitted yet; that’s the first thing I check in a new account.</p>
+<h2>What goes into every registration</h2>
+<ol>
+<li><strong>A business profile that matches official records exactly</strong>: legal name, EIN, address and website. I copy them from the official documents, never from memory or the client’s email signature.</li>
+<li><strong>The brand</strong>, submitted and approved.</li>
+<li><strong>The campaign</strong>: use case, sample messages, an opt-in description, and opt-out and help keywords.</li>
+<li><strong>Consent and privacy wording on the client’s website and forms</strong>, because reviewers check them.</li>
+<li><strong>SHAKEN/STIR</strong> for the account’s phone numbers.</li>
+</ol>
+<p>I go into the details of steps 1 to 4 in <a href="/blog/a2p-10dlc-registration-gohighlevel-approval/">what gets A2P registrations approved</a>. The short version: almost every rejection comes from a mismatch, a missing privacy statement or a vague opt-in description.</p>
+${fig('/assets/projects/a2p-06.webp',1918,927,'Another GoHighLevel Trust Center page with approved A2P registration','Every account’s Trust Center page looks like this once the brand and campaign are approved.')}
+<h2>The website is half the registration</h2>
+<p>For several of these accounts, the GHL part took less time than the website. Reviewers visit the site, and they want to see:</p>
+<ul>
+<li>The same business name and contact details as the brand registration.</li>
+<li>A privacy policy saying mobile information won’t be shared with third parties for marketing.</li>
+<li>A phone number field with a clear, optional consent checkbox and opt-out wording.</li>
+<li>Links to the privacy policy and terms next to the form.</li>
+</ul>
+<p>When the client’s website was built somewhere else, I sent them the exact wording to add and checked it was live before submitting. Submitting first and fixing the site later only adds a rejection and a resubmission.</p>
+<h2>Writing campaigns that pass</h2>
+<p>The campaigns that went through first time had three things in common. The use case matched what the business actually sends. The description explained, in plain language, who receives messages and why. And the sample messages looked like real messages: the business name, a realistic reason to text, and “Reply STOP to opt out” in at least one sample.</p>
+<p>A cosmetic clinic sending appointment reminders and a real estate buyer contacting sellers write very different samples. Copying a template from another niche is a common reason for rejection.</p>
+<h2>Don’t forget SHAKEN/STIR</h2>
+<p>SHAKEN/STIR is easy to overlook because texting works without it. But if a sales team makes outbound calls from GHL numbers, unverified calls are more likely to be labelled as spam on the recipient’s phone. The registration itself is quicker than A2P once the business profile is correct, so I complete it in the same session whenever the account makes calls.</p>
+<h2>After approval</h2>
+<ul>
+<li><strong>Keep messages within the approved use case.</strong> A campaign approved for appointment reminders shouldn’t start sending promotions.</li>
+<li><strong>Keep the website wording live.</strong> Removing the privacy policy during a redesign can cause problems later.</li>
+<li><strong>Register new numbers.</strong> Numbers added later still need to be covered.</li>
+<li><strong>Take a screenshot.</strong> A record of the approved badges is useful when the client, an agency owner or a new team member asks.</li>
+</ul>
+<p>None of this is glamorous work, but it decides whether every SMS workflow and every sales call actually reaches people.</p>`
+},
+{
+ slug:'building-a-business-website-in-gohighlevel',
+ title:'Building an eight-page business website in GoHighLevel',
+ seoTitle:'Building a Business Website in GoHighLevel Websites | Hanzla Amjad',
+ description:'How I plan and build a multi-page company website in GHL: page structure, a shared design system, a contact form that lands in the CRM, and what to maintain afterwards.',
+ category:'Websites',published:'2026-11-15',modified:'2026-11-15',
+ keywords:['GoHighLevel website','GHL website builder','business website','lead capture form','website structure'],
+ related:['gohighlevel-ecom-vsl-qualification-funnel','gohighlevel-survey-funnel-lead-qualification','a2p-shaken-stir-registration-ten-gohighlevel-accounts'],
+ cover:null,
+ body:`<p>Most people think of GoHighLevel for funnels: one page, one offer, one form. But GHL’s website builder handles a full company site well, and keeping the site in the same platform as the CRM means every enquiry lands in the right place without an extra integration.</p>
+<p>For a BPO and digital services company, I built an eight-page website in GHL that presents twelve services, the industries they work with, client projects, pricing and testimonials, and turns visitors into leads. Here’s how I approached it.</p>
+<h2>Start with the page list</h2>
+<p>Before opening the builder, I agree the pages and what each one has to do. For this site:</p>
+<ul>
+<li><strong>Home</strong>: the full pitch in one scroll. A hero with the main promise, all twelve services as tiles, why choose the company, a three-step “how it works”, client projects and pricing plans.</li>
+<li><strong>About</strong>: the company, its vision and mission, and the tools and technology it uses.</li>
+<li><strong>Services</strong>: all twelve services as cards with a short description each.</li>
+<li><strong>Industries</strong>: healthcare, finance, e-commerce, education and real estate.</li>
+<li><strong>Solutions</strong>: the full solution list and four trust points: qualified staff, security, multilingual support and affordability.</li>
+<li><strong>Testimonials</strong>: five client reviews, one per card.</li>
+<li><strong>Contact</strong>: the lead form.</li>
+<li><strong>Thank you</strong>: shown only after the form is sent.</li>
+</ul>
+<p>The pages follow the order of the main navigation, so the builder’s page list mirrors what a visitor sees.</p>
+<h2>A small design system</h2>
+<p>A multi-page site falls apart visually when every page is designed separately. I set a few rules first and applied them everywhere:</p>
+<ul>
+<li><strong>Colours</strong>: dark navy backgrounds with one bright blue accent for buttons, icons and labels.</li>
+<li><strong>Type</strong>: a serif display font for headings and a clean sans-serif for body text.</li>
+<li><strong>Components</strong>: the same header with a blue Contact button, the same icon cards for services, and the same four-column footer on every page.</li>
+<li><strong>Inner page heroes</strong>: each page starts with a full-width hero over a dark city or technology image, so every page feels like part of the same brand.</li>
+</ul>
+<p>In GHL, I build the header, footer and card styles once and reuse them, rather than rebuilding them on each page. It saves time now and makes later changes consistent.</p>
+<h2>The lead path</h2>
+<p>Every “Contact” button in the header leads to the contact page. The form asks for first name, last name, phone and email. Only phone and email are required. That keeps the form quick while still giving the sales team two ways to reach the lead.</p>
+<p>When the form is submitted, the contact is created in the CRM and the visitor is redirected to the thank you page. A dedicated thank you page is worth having even for a simple site: it confirms the request clearly, and it gives ad platforms and analytics a reliable conversion to track.</p>
+<h2>Why build the site inside GHL?</h2>
+<ul>
+<li><strong>No integration to maintain.</strong> The form writes straight into the CRM, where workflows can reply, tag and notify the team.</li>
+<li><strong>One login.</strong> The client edits pages, reads enquiries and runs follow-up in the same place.</li>
+<li><strong>Funnels later.</strong> When the business wants a campaign landing page, it can be built alongside the site, using the same styles and the same forms.</li>
+</ul>
+<p>It isn’t the right choice for every site. A large content site or a complex web app is better elsewhere. For a service business that mainly needs to explain what it does and capture enquiries, it works well.</p>
+<h2>Content that does the selling</h2>
+<p>A services site lives or dies on whether visitors quickly understand what the company does. A few things I push for during the build:</p>
+<ul>
+<li>One clear sentence in the hero, not a slogan.</li>
+<li>Service descriptions written for the customer’s problem, not the company’s internal names.</li>
+<li>Real projects and real testimonials, with permission.</li>
+<li>Contact details (email, phone and address) in the footer of every page.</li>
+</ul>
+<h2>What to maintain afterwards</h2>
+<p>I gave the client a short list with the handover:</p>
+<ul>
+<li><strong>The service list appears in four places</strong>: Home, Services, Solutions and the footer. When a service is added or renamed, update all of them.</li>
+<li><strong>Contact details are in every footer.</strong> After changing the phone, email or address, check every page.</li>
+<li><strong>The form redirects to the thank you page.</strong> If that page is renamed or its URL changes, update the redirect.</li>
+<li><strong>New pages should reuse the same hero, header and footer</strong>, so the site keeps one look.</li>
+</ul>
+<h2>Next steps after launch</h2>
+<p>Once the site is live, the useful additions are a workflow that replies to every enquiry within minutes, a pipeline for new leads, and the compliance basics if the business will text leads: a privacy policy and an opt-in on the form. I covered that last part in <a href="/blog/a2p-shaken-stir-registration-ten-gohighlevel-accounts/">A2P and SHAKEN/STIR registration</a>.</p>`
 }
 ];
